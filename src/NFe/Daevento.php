@@ -379,15 +379,9 @@ class Daevento extends DaCommon
         $this->pdf->textBox($x, $y1, $maxW, 40);
         $sY = $y1 + 40;
         if ($this->tpEvento == '110110') {
-            $texto = 'De acordo com as determinações legais vigentes, vimos por meio desta '
-                . 'comunicar-lhe que a Nota Fiscal, abaixo referenciada, contém irregularidades'
-                . ' que estão destacadas e suas respectivas correções, solicitamos que sejam aplicadas '
-                . 'essas correções ao executar seus lançamentos fiscais.';
+            $texto = '';
         } elseif ($this->tpEvento == '110111') {
-            $texto = 'De acordo com as determinações legais vigentes, '
-                . 'vimos por meio desta comunicar-lhe que a Nota Fiscal, '
-                . 'abaixo referenciada, está cancelada, solicitamos que sejam '
-                . 'aplicadas essas correções ao executar seus lançamentos fiscais.';
+            $texto = '';
         }
         $aFont = ['font' => $this->fontePadrao,'size' => 10,'style' => ''];
         $this->pdf->textBox($x + 5, $y1, $maxW - 5, 20, $texto, $aFont, 'T', 'L', 0, '', false);
