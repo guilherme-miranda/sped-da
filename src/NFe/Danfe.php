@@ -37,7 +37,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-    protected $exibirValorTributos = true;
+    protected $exibirValorTributos = false;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
@@ -324,13 +324,13 @@ class Danfe extends DaCommon
                 $this->textoAdic .= ". \n";
             }
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infCpl"))
-                ? 'Inf. Contribuinte: ' . $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
+                ? $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
                 : '';
             $infPedido       = $this->geraInformacoesDaTagCompra();
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-            $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            //$this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
@@ -641,11 +641,11 @@ class Danfe extends DaCommon
         //coloca os dados adicionais da NFe
         $y = $this->dadosAdicionais($x, $y, $this->hdadosadic);
         //coloca o rodapé da página
-        if ($this->orientacao == 'P') {
-            $this->rodape($xInic);
-        } else {
-            $this->rodape($xInic);
-        }
+        // if ($this->orientacao == 'P') {
+        //     $this->rodape($xInic);
+        // } else {
+        //     $this->rodape($xInic);
+        // }
 
         //loop para páginas seguintes
         for ($n = 2; $n <= $totPag; $n ++) {
@@ -665,12 +665,12 @@ class Danfe extends DaCommon
             //coloca os itens na página adicional
             $y = $this->itens($x, $y + 1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
-            if ($this->orientacao == 'P') {
-                $this->rodape($this->margesq);
-            } else {
-                $this->rodape($this->margesq);
-            }
-            //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
+            // if ($this->orientacao == 'P') {
+            //     $this->rodape($this->margesq);
+            // } else {
+            //     $this->rodape($this->margesq);
+            // }
+            // //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
                 $totPag ++;
             }
@@ -3420,7 +3420,7 @@ class Danfe extends DaCommon
         } else {
             $w = $this->wPrint - $this->wCanhoto;
             $x = $this->wCanhoto;
-        }
+        }   
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'I'];
         $texto = "Impresso em " . date('d/m/Y') . " as " . date('H:i:s')
             . '  ' . $this->creditos;

@@ -80,7 +80,7 @@ class DaCommon extends Common
     /**
      * @var bool
      */
-    protected $powered = true;
+    protected $powered = false;
     /**
      * @var string
      */
