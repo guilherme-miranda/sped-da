@@ -433,11 +433,11 @@ class Dacte extends DaCommon
         //$y += 11;
         //$y = $this->canhoto($x, $y);
         //coloca o rodapé da página
-        if ($this->orientacao == 'P') {
-            $this->rodape(2, $this->hPrint - 2);
-        } else {
-            $this->rodape($xInic, $this->hPrint + 2.3);
-        }
+        // if ($this->orientacao == 'P') {
+        //     $this->rodape(2, $this->hPrint - 2);
+        // } else {
+        //     $this->rodape($xInic, $this->hPrint + 2.3);
+        // }
         if ($this->modal == 3) {
             if ($this->flagDetContContinuacao == 1) {
                 $this->detContContinuacao(1, 71);

@@ -10,9 +10,10 @@ trait TraitBlocoIX
     protected function blocoIX($y)
     {
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
-        $trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
-        $texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
+        //$valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
+        //$trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
+        //$texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
+        $texto = $this->getTagValue($this->infAdic, "infCpl");
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         $this->pdf->textBox(
             $this->margem,

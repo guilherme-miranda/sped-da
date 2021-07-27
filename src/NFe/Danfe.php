@@ -680,11 +680,11 @@ class Danfe extends DaCommon
         //coloca os dados adicionais da NFe
         $y = $this->dadosAdicionais($x, $y, $this->hdadosadic);
         //coloca o rodapé da página
-        if ($this->orientacao == 'P') {
-            $this->rodape($xInic);
-        } else {
-            $this->rodape($xInic);
-        }
+        // if ($this->orientacao == 'P') {
+        //     $this->rodape($xInic);
+        // } else {
+        //     $this->rodape($xInic);
+        // }
 
         //loop para páginas seguintes
         for ($n = 2; $n <= $totPag; $n ++) {
@@ -704,11 +704,11 @@ class Danfe extends DaCommon
             //coloca os itens na página adicional
             $y = $this->itens($x, $y + 1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
-            if ($this->orientacao == 'P') {
-                $this->rodape($this->margesq);
-            } else {
-                $this->rodape($this->margesq);
-            }
+            // if ($this->orientacao == 'P') {
+            //     $this->rodape($this->margesq);
+            // } else {
+            //     $this->rodape($this->margesq);
+            // }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
                 $totPag ++;
