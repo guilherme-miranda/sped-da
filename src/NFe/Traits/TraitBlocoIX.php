@@ -10,10 +10,16 @@ trait TraitBlocoIX
     protected function blocoIX($y)
     {
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+<<<<<<< HEAD
         //$valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
         //$trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         //$texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
         $texto = $this->getTagValue($this->infAdic, "infCpl");
+=======
+        $valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
+        $trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
+        $texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
+>>>>>>> 20086d8ea6ad835e50e0f77c38e13426621ab0e8
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         $this->pdf->textBox(
             $this->margem,
@@ -72,4 +78,8 @@ trait TraitBlocoIX
         $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont)+2;
         return (int) ($numlinhas * $hfont) + 2;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 20086d8ea6ad835e50e0f77c38e13426621ab0e8

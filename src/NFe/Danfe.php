@@ -2062,12 +2062,12 @@ class Danfe extends DaCommon
             $dups    = "";
             $dupcont = 0;
             if ($this->orientacao == 'P') {
-                $w = round($this->wPrint / 7.018, 0) - 1;
+                $w = round($this->wPrint / 3.968, 0) - 1;
             } else {
                 $w = 28;
             }
             if ($this->orientacao == 'P') {
-                $maxDupCont = 6;
+                $maxDupCont = 3;
             } else {
                 $maxDupCont = 8;
             }
@@ -2086,8 +2086,8 @@ class Danfe extends DaCommon
                 '15' => 'Boleto',
                 '16' => 'Depósito Bancário',
                 '17' => 'Pagamento Instantâneo (PIX)',
-                '18' => 'Transferência bancária, Carteira Digital',
-                '19' => 'Programa de fidelidade, Cashback, Crédito Virtual',
+                '18' => 'Transferência Bancária, Carteira Digit.',
+                '19' => 'Fidelidade, Cashback, Crédito Virtual',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
@@ -2945,7 +2945,7 @@ class Danfe extends DaCommon
                     $origem = $this->getTagValue($ICMS, "orig");
                     $cst    = $this->getTagValue($ICMS, "CST");
                     $csosn  = $this->getTagValue($ICMS, "CSOSN");
-                    $texto  = $origem . $cst . $csosn;
+                    $texto  = $origem . "/" . $cst . $csosn;
                     $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
                 //CFOP
@@ -3083,7 +3083,7 @@ class Danfe extends DaCommon
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (! empty($veicProd)) {
-                    $this->dadosItenVeiculoDANFE($oldX, $y, $nInicio, $h, $prod);
+                    $this->dadosItenVeiculoDANFE($oldX + 3, $y + 40, $nInicio, 3, $prod);
                 }
 
 
