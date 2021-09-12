@@ -562,7 +562,7 @@ class Dacte extends DaCommon
         //CNPJ/CPF IE
         $cpfCnpj = $this->formatCNPJCPF($this->emit);
         $ie = $this->getTagValue($this->emit, "IE");
-        $texto = 'CNPJ/CPF:  ' . $cpfCnpj . '     Insc.Estadual: ' . $ie;
+        $texto = 'CNPJ/CPF:  ' . $cpfCnpj . '  Insc.Estadual: ' . $ie;
         $this->pdf->textBox($x1 - 1, $y1 + 12, $tw + 5, 8, $texto, $aFont, 'T', 'C', 0, '');
         //outra caixa
         $h1 = 17.5;
@@ -690,7 +690,7 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x + 25, $y + 2, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 9,
+            'size' => 8,
             'style' => '');
         $texto = "Documento Auxiliar do Conhecimento de Transporte Eletrônico";
         $h = 10;

@@ -324,7 +324,7 @@ class Damdfe extends DaCommon
         $w = round($maxW * 0.70, 0);
         $y = $h + 9;
         $this->pdf->textBox($x, $y, $w, 6);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 12, 'style' => 'I'];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'I'];
         $this->pdf->textBox(
             $x,
             $y,
@@ -550,7 +550,7 @@ class Damdfe extends DaCommon
         $w = round($maxW * 0.70, 0);
         $y = $h + 9;
         $this->pdf->textBox($x, $y, $w, 6);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'I');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'I');
         $this->pdf->textBox(
             $x,
             $y,
@@ -661,8 +661,8 @@ class Damdfe extends DaCommon
         $texto = 'Data e Hora de Emissão';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x1, $y, $x3, 8, $texto, $aFont, 'T', 'C', 0, '', false);
-        $data = explode('T', $this->dhEmi);
-        $texto = $this->ymdTodmy($data[0]) . ' - ' . $data[1];
+        $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
+            date('d/m/Y H:i:s', strtotime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox($x1, $y + 4, $x3, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $x1 += $x3;
