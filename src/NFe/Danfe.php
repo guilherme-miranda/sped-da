@@ -357,7 +357,8 @@ class Danfe extends DaCommon
                 $this->textoAdic .= ". \n";
             }
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infCpl"))
-                ? $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
+                //? 'Inf. Contribuinte: ' . $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
+                ? 'Inf. Contribuinte: ' . $this->getTagValue($this->infAdic, "infCpl")
                 : '';
             $infPedido       = $this->geraInformacoesDaTagCompra();
             if ($infPedido != "") {
@@ -894,16 +895,10 @@ class Danfe extends DaCommon
             }
             $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
             $cStat = $this->getTagValue($this->nfeProc, "cStat");
-            if ($cStat == '110' ||
-                $cStat == '301' ||
-                $cStat == '302'
-            ) {
+            if (in_array($cStat, ['110','205','301','302','303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif ($cStat == '101'
-                || $cStat == '151'
-                || $cStat == '135'
-                || $cStat == '155'
+            } elseif (in_array($cStat, ['101','151','135','155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -2658,7 +2653,8 @@ class Danfe extends DaCommon
         }
         $infAdProd = ! empty($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue)
             ? substr(
-                $this->anfaveaDANFE($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue),
+                //$this->anfaveaDANFE($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue),
+                $itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue,
                 0,
                 500
             )
@@ -2919,8 +2915,7 @@ class Danfe extends DaCommon
                     }
                 }
                 $y_linha = $y + $h;
-                // linha entre itens
-                $this->pdf->dashedHLine($oldX, $y_linha, $w, 0.1, 120);
+                
                 //corrige o x
                 $x = $oldX;
                 //codigo do produto
@@ -3083,7 +3078,14 @@ class Danfe extends DaCommon
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (! empty($veicProd)) {
-                    $this->dadosItenVeiculoDANFE($oldX + 3, $y + 40, $nInicio, 3, $prod);
+                    $y += $h - 10;
+                    $this->dadosItenVeiculoDANFE($oldX + 3, $y, $nInicio, 3, $prod);
+                    // linha entre itens
+                    $this->pdf->dashedHLine($oldX, $y+23, $w, 0.1, 120);
+                    $y -= 38;
+                } else {
+                    // linha entre itens
+                    $this->pdf->dashedHLine($oldX, $y, $w, 0.1, 120);
                 }
 
 
@@ -3223,7 +3225,7 @@ class Danfe extends DaCommon
 
         $x = $oldX;
 
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $texto = 'Chassi: ............: ' . $veiculoChassi;
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
@@ -3238,7 +3240,7 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $x + 65;
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
@@ -3254,7 +3256,7 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Tipo Pintura......: ' . ($renavamEspecie[intval($veiculoTipoPintura)] ?? $veiculoTipoPintura);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $xVeic + 55;
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');

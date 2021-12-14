@@ -873,7 +873,8 @@ class Pdf extends Fpdf
         $link = '',
         $force = true,
         $hmax = 0,
-        $vOffSet = 0
+        $vOffSet = 0,
+        $fill = false
     ) {
         $oldY = $y;
         $temObs = false;
@@ -895,9 +896,12 @@ class Pdf extends Fpdf
             $text = (string) $text;
         }
         //desenhar a borda da caixa
-        if ($border) {
+        if ($border && $fill) {
+            $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'DF');
+        } elseif ($border) {
             $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'D');
-        }
+        } elseif ($fill) {
+            $this->rect($x, $y, $w, $h, 'F');
         //estabelecer o fonte
         $this->setFont($aFont['font'], $aFont['style'], $aFont['size']);
         //calcular o incremento
