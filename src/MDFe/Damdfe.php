@@ -129,7 +129,7 @@ class Damdfe extends DaCommon
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             if (!empty($this->rodo)) {
                 $infANTT = $this->rodo->getElementsByTagName("infANTT")->item(0);
-                 try {
+                try {
                     $this->RNTRC = $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
                 } catch (\Exception $e) {
                     $this->RNTRC = "";
@@ -176,7 +176,6 @@ class Damdfe extends DaCommon
         $this->buildMDFe();
     }
 
-
     /**
      * buildMDFe
      */
@@ -222,7 +221,7 @@ class Damdfe extends DaCommon
         $this->pdf->open();
         // adiciona a primeira página
         $this->pdf->addPage($this->orientacao, $this->papel);
-        $this->pdf->setLineWidth(0.1);
+        $this->pdf->setLineWidth(0.2);
         $this->pdf->setTextColor(0, 0, 0);
         //montagem da página
         $pag = 1;
@@ -310,8 +309,8 @@ class Damdfe extends DaCommon
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
         $ie = 'IE: ' . (strlen($this->IE) == 9
-            ? $this->formatField($this->IE, '###/#######')
-            : $this->formatField($this->IE, '###.###.###.###'));
+                ? $this->formatField($this->IE, '###/#######')
+                : $this->formatField($this->IE, '###.###.###.###'));
         $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
@@ -321,7 +320,7 @@ class Damdfe extends DaCommon
         $UF = 'UF: ' . $this->UF;
         $mun = 'Municipio: ' . $this->xMun;
 
-        $texto = $cpfcnpj . ' - ' . $ie . $rntrc ."\n";
+        $texto = $cpfcnpj . ' - ' . $ie . $rntrc . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
@@ -331,7 +330,7 @@ class Damdfe extends DaCommon
         $w = round($maxW * 0.70, 0);
         $y = $h + 9;
         $this->pdf->textBox($x, $y, $w, 6, '', $this->baseFont, 'T', 'L', 0);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'I'];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 12, 'style' => 'I'];
         $this->pdf->textBox(
             $x,
             $y,
@@ -438,10 +437,10 @@ class Damdfe extends DaCommon
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111'
                     && ($cStat == '101'
-                    || $cStat == '151'
-                    || $cStat == '135'
-                    || $cStat == '155'
-                )) {
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155'
+                    )) {
                     $resp['status'] = false;
                     $resp['valida'] = false;
                     $resp['message'][] = "MDFe CANCELADA";
@@ -463,9 +462,9 @@ class Damdfe extends DaCommon
     /**
      * headerMDFeRetrato
      *
-     * @param  float $x
-     * @param  float $y
-     * @param  integer $pag
+     * @param float $x
+     * @param float $y
+     * @param integer $pag
      * @return string
      */
     private function headerMDFeRetrato($x, $y, $pag)
@@ -490,7 +489,7 @@ class Damdfe extends DaCommon
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
             if ($this->logoAlign == 'L') {
                 // ajusta a dimensão do logo
-                $nImgW = round((round($maxW * 0.50, 0)) / 3, 0);
+                $nImgW = round((round($maxW * 0.35, 0)) / 3, 0);
                 $nImgH = round(($h - $y) - 2, 0) + $y;
                 $xImg = $x + 1;
                 $yImg = round(($h - $nImgH) / 2, 0) + $y;
@@ -537,8 +536,8 @@ class Damdfe extends DaCommon
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
         $ie = 'IE: ' . (strlen($this->IE) == 9
-            ? $this->formatField($this->IE, '###/#######')
-            : $this->formatField($this->IE, '###.###.###.###'));
+                ? $this->formatField($this->IE, '###/#######')
+                : $this->formatField($this->IE, '###.###.###.###'));
         $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
@@ -557,13 +556,26 @@ class Damdfe extends DaCommon
         $w = round($maxW * 0.70, 0);
         $y = $h + 9;
         $this->pdf->textBox($x, $y, $w, 6, '', $this->baseFont, 'T', 'L', 0);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'I');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox(
             $x,
             $y,
             $w,
             8,
-            'DAMDFE - Documento Auxiliar de Manifesto Eletronico de Documentos Fiscais',
+            'DAMDFE',
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $this->pdf->textBox(
+            $x + 16,
+            $y,
+            $w,
+            8,
+            '- Documento Auxiliar de Manifesto Eletronico de Documentos Fiscais',
             $aFont,
             'T',
             'L',
@@ -575,7 +587,7 @@ class Damdfe extends DaCommon
             $n = count($resp['message']);
             $alttot = $n * 15;
             $x = 10;
-            $y = $this->hPrint/2 - $alttot/2;
+            $y = $this->hPrint / 2 - $alttot / 2;
             $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
@@ -635,30 +647,30 @@ class Damdfe extends DaCommon
         } else {
             $x1 += $x2 - 57.5;
         }
-        $this->pdf->textBox($x1, $y, $x2 - 22, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
+        $this->pdf->textBox($x1 - 1, $y, $x2 - 20, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
         $texto = 'Série';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x1, $y, $x2 - 22, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = $this->serie;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pdf->textBox($x1, $y + 4, $x2 - 22, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x1, $y + 4, $x2 - 22, 4, $texto, $aFont, 'T', 'L', 0, '', false);
 
         $x1 += $x2 - 22;
         $this->pdf->textBox($x1, $y, $x2 - 6, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
         $texto = 'Número';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pdf->textBox($x1, $y, $x2 - 5, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x1, $y, $x2 - 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = $this->formatField(str_pad($this->nMDF, 9, '0', STR_PAD_LEFT), '###.###.###');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pdf->textBox($x1, $y + 4, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x1, $y + 4, $x2 - 6, 4, $texto, $aFont, 'T', 'L', 0, '', false);
         $x1 += $x2 - 5;
-        $this->pdf->textBox($x1, $y, $x2 - 22, 12);
+        $this->pdf->textBox($x1, $y, $x2 - 23, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
         $texto = 'FL';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x1, $y, $x2 - 23, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = '1/1';
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pdf->textBox($x1, $y + 4, $x2 - 23, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x1, $y + 4, $x2 - 23, 4, $texto, $aFont, 'T', 'L', 0, '', false);
         $x1 += $x2 - 22;
         if ($this->orientacao == 'P') {
             $x3 = $x2 + 10.5;
@@ -693,6 +705,7 @@ class Damdfe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox($x1, $y + 4, $x2 - 16, 4, $texto, $aFont, 'T', 'L', 0, '', false);
         $maxW = $this->wPrint;
+
         $this->pdf->setFillColor(255, 255, 255);
         if ($this->aquav) {
             $x1 = $x;
@@ -733,7 +746,7 @@ class Damdfe extends DaCommon
 
         $x1 = $x;
         $x2 = ($maxW / 6);
-        $y += 6;
+        $y += 8;
         $this->pdf->setFillColor(235, 236, 238);
         $this->pdf->textBox($x1, $y, $x2 - 1, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
         $texto = 'Qtd. CT-e';
@@ -751,7 +764,7 @@ class Damdfe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox($x1, $y + 4, $x2 - 1, 4, $texto, $aFont, 'T', 'L', 0, '', false);
         $x1 += $x2;
-        $this->pdf->textBox($x1, $y, $x2, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
+        $this->pdf->textBox($x1, $y, $x2 - 8, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
 
         if ($this->rodo
             || $this->aereo
@@ -799,7 +812,7 @@ class Damdfe extends DaCommon
         $bH = 16;
         $w = $maxW;
         $this->pdf->setFillColor(0, 0, 0);
-        $this->pdf->code128($x1 + 5, $y + 2, $this->chMDFe, ($maxW / 2) - 10, $bH);
+        $this->pdf->code128($x1 + 1, $y, $this->chMDFe, ($maxW / 2) - 10, $bH);
         $this->pdf->setFillColor(255, 255, 255);
 
         // protocolo de autorização
@@ -808,7 +821,7 @@ class Damdfe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
         $texto = 'Protocolo de Autorização';
         $this->pdf->textBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->toTimestamp($this->dhRecbto);
             $texto = $this->nProt . ' - ' . date('d/m/Y H:i:s', $tsHora);
@@ -825,28 +838,28 @@ class Damdfe extends DaCommon
         $tsHora = $this->toTimestamp($this->dhEvento);
         $texto = 'Chave de Acesso';
         $this->pdf->textBox($x + $maxW / 2, $y + 4, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
         $texto = $this->formatField($this->chMDFe, $this->formatoChave);
         $this->pdf->textBox($x + $maxW / 2, $y + 8, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
         $texto = 'Consulte em https://dfe-portal.sefazvirtual.rs.gov.br/MDFe/consulta';
         $this->pdf->textBox($x + $maxW / 2, $y + 12, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
 
         $x1 = $x;
-        $y += 20;
+        $y += 25;
         $yold = $y;
         $x2 = round($maxW / 2, 0);
 
         if ($this->rodo) {
             $texto = 'Veículo';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $y += 5;
+            $y += 7;
             $x2 = round($maxW / 4, 0);
             $tamanho = 22;
             $this->pdf->textBox($x1, $y, $x2, $tamanho, '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Placa';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $texto = $this->veicTracao->getElementsByTagName("placa")->item(0)->nodeValue;
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
@@ -867,9 +880,12 @@ class Damdfe extends DaCommon
             }
             $x1 += $x2;
             $this->pdf->textBox($x1, $y, $x2, $tamanho, '', $this->baseFont, 'T', 'L', 0);
+            $this->pdf->line($x, $y + 4, $x + 94, $y + 4);
+
             $texto = 'RNTRC';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
             $prop = $this->veicTracao->getElementsByTagName("prop")->item(0);
             if (!empty($prop)) {
                 $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
@@ -910,13 +926,13 @@ class Damdfe extends DaCommon
             }
             $this->pdf->textBox($x1, $y, $x2, 11 + $tamanho / 2, '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Vale Pedágio';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $y += 5;
+            $y += 7;
             $x2 = ($x2 / 3);
             $this->pdf->textBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Responsável CNPJ';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
@@ -929,7 +945,7 @@ class Damdfe extends DaCommon
             $x1 += $x2 - 3;
             $this->pdf->textBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Fornecedora CNPJ';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
@@ -942,8 +958,10 @@ class Damdfe extends DaCommon
             $x1 += $x2 - 3;
             $this->pdf->textBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Nº Comprovante';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2 + 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $this->pdf->line($x, $y + 4, $x2 + 68, $y + 4);
+
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
@@ -959,19 +977,21 @@ class Damdfe extends DaCommon
             $y = $yold;
             $x2 = round($maxW / 2, 0);
             $texto = 'Condutor';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $y += 5;
+            $y += 7;
             $x2 = ($maxW / 6);
             $this->pdf->textBox($x1, $y, $x2, 33 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'CPF';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $this->pdf->line($x1, $y + 4, $x1 + 96, $y + 4);
+
             $yold = $y;
             for ($i = 0; $i < $this->condutor->length; $i++) {
                 $y += 4;
                 $texto = $this->condutor->item($i)->getElementsByTagName('CPF')->item(0)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
             $y = $yold;
@@ -979,12 +999,12 @@ class Damdfe extends DaCommon
             $x2 = $x2 * 2;
             $this->pdf->textBox($x1, $y, $x2, 33 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Nome';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             for ($i = 0; $i < $this->condutor->length; $i++) {
                 $y += 4;
                 $texto = $this->condutor->item($i)->getElementsByTagName('xNome')->item(0)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             }
             if ($this->orientacao == 'P') {
@@ -992,9 +1012,15 @@ class Damdfe extends DaCommon
                 //$x2 = round($maxW / 2, 0);
                 $x2 = ($maxW / 6);
                 $y = $yCabecalhoLinha;
-                $texto = 'Chaves de acesso';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $texto = 'Documentos';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
                 $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $y = $y + 7;
+                $texto = 'Chaves de acesso';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
+                $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->line($x1, $y + 4, $w + 5 , $y + 4);
+
                 $y = $y + 2;
                 $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
                 $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
@@ -1006,7 +1032,7 @@ class Damdfe extends DaCommon
                     $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                     $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                     $contadorChaves++;
-                    if ($contadorChaves > 25) {
+                    if ($contadorChaves > 20) {
                         break;
                     }
                 }
@@ -1250,7 +1276,7 @@ class Damdfe extends DaCommon
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
     }
-    
+
     /**
      * footerMDFe
      *
@@ -1268,14 +1294,16 @@ class Damdfe extends DaCommon
             $h = 20;
             $y = 180;
         }
-        $this->pdf->textBox($x, $y, $x2, $h, '', $this->baseFont, 'T', 'L', 1);
-        $texto = 'Observação
+        //$this->pdf->textBox($x, $y, $x2, $h, '', $this->baseFont, 'T', 'L', 1);
+        $texto = 'Observações
         ' . $this->infCpl;
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->line($x, $y + 4, $x2 + 5, $y + 4);
+
         //$y = $this->hPrint - 4;
         $y = $this->hPrint + 8;
-        $texto = '';
+        $texto = $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
