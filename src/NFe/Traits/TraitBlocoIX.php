@@ -20,7 +20,7 @@ trait TraitBlocoIX
             $y,
             $this->wPrint,
             $this->bloco9H,
-            $texto,
+            str_replace(";", "\n", $texto),
             $aFont,
             'T',
             'C',
