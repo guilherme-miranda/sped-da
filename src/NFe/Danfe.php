@@ -38,11 +38,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-<<<<<<< HEAD
-    protected $exibirValorTributos = false;
-=======
-    public $exibirValorTributos = true;
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
+    public $exibirValorTributos = false;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
@@ -361,11 +357,7 @@ class Danfe extends DaCommon
             if ($this->textoAdic != '') {
                 $this->textoAdic .= ". \n";
             }
-<<<<<<< HEAD
-            $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infCpl"))
-=======
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infCpl"))
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 //? 'Inf. Contribuinte: ' . $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
                 ? 'Inf. Contribuinte: ' . $this->getTagValue($this->infAdic, "infCpl")
                 : '';
@@ -373,13 +365,8 @@ class Danfe extends DaCommon
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-<<<<<<< HEAD
             //$this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infAdFisco"))
-=======
-            $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
-            $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
             if ($this->obsshow) {
@@ -915,17 +902,10 @@ class Danfe extends DaCommon
             }
             $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
             $cStat = $this->getTagValue($this->nfeProc, "cStat");
-<<<<<<< HEAD
             if (in_array($cStat, ['110','205','301','302','303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
             } elseif (in_array($cStat, ['101','151','135','155'])
-=======
-            if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
-                $resp['status'] = false;
-                $resp['message'][] = "NFe DENEGADA";
-            } elseif (in_array($cStat, ['101', '151', '135', '155'])
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -3116,11 +3096,6 @@ class Danfe extends DaCommon
                 }
                 
                 $y_linha = $y + $h;
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 //corrige o x
                 $x = $oldX;
                 //codigo do produto
@@ -3282,14 +3257,6 @@ class Danfe extends DaCommon
                 $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
-<<<<<<< HEAD
-                if (! empty($veicProd)) {
-                    $y += $h - 10;
-                    $this->dadosItenVeiculoDANFE($oldX + 3, $y, $nInicio, 3, $prod);
-                    // linha entre itens
-                    $this->pdf->dashedHLine($oldX, $y+23, $w, 0.1, 120);
-                    $y -= 38;
-=======
                 if (!empty($veicProd)) {
                     $y += $h - 10;
                     $this->dadosItenVeiculoDANFE($oldX + 3, $y, $nInicio, 3, $prod);
@@ -3297,7 +3264,6 @@ class Danfe extends DaCommon
                     $this->pdf->dashedHLine($oldX, $y + 30, $w, 0.1, 120);
                     $y += 30;
                     $hUsado += 30;
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 } else {
                     // linha entre itens
                     $this->pdf->dashedHLine($oldX, $y, $w, 0.1, 120);
@@ -3470,10 +3436,7 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Marca/Modelo......: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
-<<<<<<< HEAD
-=======
         $yVeic += $h;
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
         $yVeic = $y + $h + 8;
         $xVeic = $xVeic + 55;
         $texto = 'Especie.................................: '

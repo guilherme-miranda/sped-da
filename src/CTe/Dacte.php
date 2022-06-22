@@ -3698,11 +3698,7 @@ class Dacte extends DaCommon
             $foneLen = strlen($fone);
             if ($foneLen == 11 && $fone[0] != 0) {
                 $fone = '(' . substr($fone, 0, 2) . ') ' . substr($fone, 2, 5) . '-' . substr($fone, 7);
-<<<<<<< HEAD
-            } else if ($foneLen > 0) {
-=======
             } elseif ($foneLen > 0) {
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 $fone2 = substr($fone, 0, $foneLen - 4);
                 $fone1 = substr($fone, 0, $foneLen - 8);
                 $fone = '(' . $fone1 . ') ' . substr($fone2, -4) . '-' . substr($fone, -4);
