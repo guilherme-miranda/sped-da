@@ -5,10 +5,6 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\MDFe\Damdfe;
 
-<<<<<<< HEAD
-$xml = file_get_contents(__DIR__ . '/fixtures/41211022545265000108580260000004081908511405.xml');
-=======
->>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 

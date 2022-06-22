@@ -699,7 +699,7 @@ class Dacte extends DaCommon
         $w = round($maxW * 0.22, 0);
         $w2 = $w;
         $h = 11;
-        $this->pdf->textBox($x1 + 46.5, $y, $w - 0.5, $h + 1);
+        $this->pdf->textBox($x1 + 46.5, $y, $w, $h + 1);
         $texto = "MODAL";
         $aFont = array(
             'font' => $this->fontePadrao,
@@ -892,7 +892,7 @@ class Dacte extends DaCommon
             $this->qrCodeDacte($y - 27);
             $w = 45;
             $x += 92.5;
-            $this->pdf->textBox($x, $y - 34, $w + 0.5, $h + 41.5);
+            $this->pdf->textBox($x, $y - 34, $w + 1, $h + 41.5);
         }
         //CFOP
         $x = $oldX;

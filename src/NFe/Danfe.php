@@ -346,7 +346,7 @@ class Danfe extends DaCommon
         //informações adicionais
         $fontProduto            = [
             'font'  => $this->fontePadrao,
-            'size'  => 8,
+            'size'  => 7,
             'style' => ''
         ];
         $k = $this->pdf->k;
@@ -359,7 +359,7 @@ class Danfe extends DaCommon
             }
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infCpl"))
                 //? 'Inf. Contribuinte: ' . $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
-                ? 'Inf. Contribuinte: ' . $this->getTagValue($this->infAdic, "infCpl")
+                ? $this->getTagValue($this->infAdic, "infCpl")
                 : '';
             $infPedido       = $this->geraInformacoesDaTagCompra();
             if ($infPedido != "") {
@@ -2923,7 +2923,7 @@ class Danfe extends DaCommon
         // cabecalho LOOP COM OS DADOS DOS PRODUTOS
         //CÓDIGO PRODUTO
         $texto = "CÓDIGO PRODUTO";
-        $w1    = round($w * 0.09, 0);
+        $w1    = round($w * 0.08, 0);
         $h     = 4;
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -2954,7 +2954,7 @@ class Danfe extends DaCommon
         $this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
         //CFOP
         $x     += $w4;
-        $w5    = round($w * 0.04, 0);
+        $w5    = round($w * 0.035, 0);
         $texto = 'CFOP';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w5, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -3017,7 +3017,7 @@ class Danfe extends DaCommon
         $this->pdf->line($x + $w13, $y, $x + $w13, $y + $hmax);
         //ALÍQ. ICMS
         $x     += $w13;
-        $w14   = round($w * 0.04, 0);
+        $w14   = round($w * 0.035, 0);
         $texto = 'ALÍQ. ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -3764,7 +3764,7 @@ class Danfe extends DaCommon
             $texto = "IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR";
             $this->pdf->textBox($x, $y, $w3, 8, $texto, $aFont, 'T', 'L', 1, '');
             $x = $oldX;
-            $y += 9;
+            $y += 10;
             $this->pdf->dashedHLine($x, $y, $this->wPrint, 0.1, 80);
             $y += 2;
 
