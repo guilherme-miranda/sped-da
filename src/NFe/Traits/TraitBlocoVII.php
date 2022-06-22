@@ -64,7 +64,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $y1 += 2*$yPlus;
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
@@ -99,7 +99,7 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
+
             //contingencia offline
             $texto = "EMITIDA EM CONTINGÊNCIA";
             $aFont = ['font'=> $this->fontePadrao, 'size' => 10, 'style' => 'B'];
@@ -117,7 +117,11 @@ trait TraitBlocoVII
                 true
             );
 
+<<<<<<< HEAD
             if( empty($protocolo) ) {
+=======
+            if (empty($protocolo)) {
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 $texto = "Pendente de autorização";
                 $aFont = ['font'=> $this->fontePadrao, 'size' => 8, 'style' => 'I'];
                 $y5 = $this->pdf->textBox(
@@ -134,10 +138,17 @@ trait TraitBlocoVII
                     true
                 );
             } else {
+<<<<<<< HEAD
                 $this->blocoVII_prot(
                     $y+$y1+$y2+$y3+$y4,
                     $subSize,
                     $protocolo, 
+=======
+                $this->blocoVIIProt(
+                    $y+$y1+$y2+$y3+$y4,
+                    $subSize,
+                    $protocolo,
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                     $dhRecbto
                 );
             }
@@ -156,7 +167,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
             $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
@@ -190,7 +201,7 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
+
             $texto = "Regularmente recebido pela administração tributária autorizadora";
             $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
             $y2 = $this->pdf->textBox(
@@ -240,7 +251,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
             $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
@@ -260,10 +271,17 @@ trait TraitBlocoVII
                 true
             );
 
+<<<<<<< HEAD
             $this->blocoVII_prot(
                 $y+1+$y1+$y2,
                 $subSize,
                 $protocolo, 
+=======
+            $this->blocoVIIProt(
+                $y+1+$y1+$y2,
+                $subSize,
+                $protocolo,
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
                 $dhRecbto
             );
         }
@@ -271,7 +289,12 @@ trait TraitBlocoVII
         return $this->bloco7H + $y;
     }
 
+<<<<<<< HEAD
     protected function blocoVII_prot($y, $subSize, $protocolo, $dhRecbto) {
+=======
+    protected function blocoVIIProt($y, $subSize, $protocolo, $dhRecbto)
+    {
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
         $texto = "Protocolo de Autorização:  {$protocolo}";
         $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
         $y1 = $this->pdf->textBox(
@@ -287,7 +310,11 @@ trait TraitBlocoVII
             '',
             true
         );
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
         $texto = "Data de Autorização:  {$dhRecbto}";
         $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
         return $this->pdf->textBox(
@@ -304,4 +331,8 @@ trait TraitBlocoVII
             true
         );
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb

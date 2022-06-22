@@ -80,7 +80,11 @@ trait TraitBlocoI
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $emitBairro;
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
+<<<<<<< HEAD
         $texto = $emitMun . "-" . $emitUF . ($emitFone ? " Fone: ".$emitFone : "");
+=======
+        $texto = $emitMun . "-" . $emitUF . ($emitFone ? "  Fone: ".$emitFone : "");
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $this->pdf->dashedHLine($this->margem, $this->bloco1H, $this->wPrint, 0.1, 30);
         return $this->bloco1H;

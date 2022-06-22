@@ -210,17 +210,13 @@ class DanfeSimples extends DaCommon
         }
     }
 
-    protected function monta(
-        $logo = ''
-    ) {
-        $this->pdf       = '';
-        $this->logomarca = $this->adjustImage($logo);
+    protected function monta($logo = null)
+    {
+        $this->pdf = '';
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
             $this->orientacao = 'L';
         }
-
-
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'L') {
             if ($this->papel == 'A5') {
@@ -239,7 +235,6 @@ class DanfeSimples extends DaCommon
                 $this->maxH = $this->papel[1];
             }
         }
-
         //Caso a largura da etiqueta seja pequena <=110mm,
         //Definimos como pequeno, para diminuir as fontes e tamanhos das células
         if ($this->maxW <= 130) {
@@ -276,6 +271,7 @@ class DanfeSimples extends DaCommon
         }
 
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
+<<<<<<< HEAD
             if (!isset($vol['esp'])) { // Espécie não especificada na transportadora (por erro de preenchimento do XML)
                 continue;
             }
@@ -284,6 +280,17 @@ class DanfeSimples extends DaCommon
             }
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
             $volumes[$vol['esp']] += @$vol['qVol'];
+=======
+            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';
+            //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
+
+            if (!isset($volumes[$espVolume])) {
+                $volumes[$espVolume] = 0;
+            }
+            
+            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $volumes[$espVolume] += @$vol['qVol'];
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
             $totalVolumes += @$vol['qVol'] ?: 0;
             // Caso o peso bruto não esteja presente no XML, soma-se zero
@@ -474,7 +481,13 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
+<<<<<<< HEAD
         if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9) {
+=======
+        if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9
+            && isset($this->nfeArray['NFe']['infNFe']['transp']['transporta'])
+        ) {
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);

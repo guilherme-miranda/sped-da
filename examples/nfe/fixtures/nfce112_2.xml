@@ -84,7 +84,11 @@
 <indTot>1</indTot>
 </prod>
 <imposto>
+<<<<<<< HEAD
 <vTotTrib>0.00</vTotTrib>
+=======
+<vTotTrib>12.33</vTotTrib>
+>>>>>>> 1f7c4e60e6899ac7e670a4bc7927bb88bd8b4cbb
 <ICMS>
 <ICMSSN500>
 <orig>0</orig>
