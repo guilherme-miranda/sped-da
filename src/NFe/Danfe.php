@@ -45,7 +45,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-    public $exibirTextoFatura = false;
+    public $exibirTextoFatura = true;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
