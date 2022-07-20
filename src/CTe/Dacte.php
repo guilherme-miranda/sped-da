@@ -433,11 +433,11 @@ class Dacte extends DaCommon
         //$y += 11;
         //$y = $this->canhoto($x, $y);
         //coloca o rodapé da página
-        // if ($this->orientacao == 'P') {
-        //     $this->rodape(2, $this->hPrint - 2);
-        // } else {
-        //     $this->rodape($xInic, $this->hPrint + 2.3);
-        // }
+        if ($this->orientacao == 'P') {
+            $this->rodape(2, $this->hPrint - 2);
+        } else {
+            $this->rodape($xInic, $this->hPrint + 2.3);
+        }
         if ($this->modal == 3) {
             if ($this->flagDetContContinuacao == 1) {
                 $this->detContContinuacao(1, 71);
@@ -562,7 +562,7 @@ class Dacte extends DaCommon
         //CNPJ/CPF IE
         $cpfCnpj = $this->formatCNPJCPF($this->emit);
         $ie = $this->getTagValue($this->emit, "IE");
-        $texto = 'CNPJ/CPF:  ' . $cpfCnpj . '  Insc.Estadual: ' . $ie;
+        $texto = 'CNPJ/CPF:  ' . $cpfCnpj . '     Insc.Estadual: ' . $ie;
         $this->pdf->textBox($x1 - 1, $y1 + 12, $tw + 5, 8, $texto, $aFont, 'T', 'C', 0, '');
         //outra caixa
         $h1 = 17.5;
@@ -690,7 +690,7 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x + 25, $y + 2, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 8,
+            'size' => 9,
             'style' => '');
         $texto = "Documento Auxiliar do Conhecimento de Transporte Eletrônico";
         $h = 10;
@@ -699,7 +699,7 @@ class Dacte extends DaCommon
         $w = round($maxW * 0.22, 0);
         $w2 = $w;
         $h = 11;
-        $this->pdf->textBox($x1 + 46.5, $y, $w, $h + 1);
+        $this->pdf->textBox($x1 + 46.5, $y, $w - 0.5, $h + 1);
         $texto = "MODAL";
         $aFont = array(
             'font' => $this->fontePadrao,
@@ -892,7 +892,7 @@ class Dacte extends DaCommon
             $this->qrCodeDacte($y - 27);
             $w = 45;
             $x += 92.5;
-            $this->pdf->textBox($x, $y - 34, $w + 1, $h + 41.5);
+            $this->pdf->textBox($x, $y - 34, $w + 0.5, $h + 41.5);
         }
         //CFOP
         $x = $oldX;
@@ -1238,7 +1238,7 @@ class Dacte extends DaCommon
         //$texto = $this->formatFone($this->dest);
         $texto = $this->getTagValue($this->dest, "fone") != "" ? $this->formatFone($this->dest) : '';
         $aFont = $this->formatNegrito;
-        $this->pdf->textBox($x + 7, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
 
     /**
@@ -2855,17 +2855,17 @@ class Dacte extends DaCommon
         $texto = '';
         foreach ($this->compl as $k => $d) {
             $xObs = $this->getTagValue($this->compl->item($k), "xObs");
-            $texto .= $xObs;
+            $texto .= str_replace(";", "\n", $xObs);
         }
-        $textoObs = explode("Motorista:", $texto);
-        $textoObs[1] = isset($textoObs[1]) ? "Motorista: " . $textoObs[1] : '';
+        //$textoObs = explode("Motorista:", $texto);
+        //$textoObs[1] = isset($textoObs[1]) ? "Motorista: " . $textoObs[1] : '';
         $texto .= $this->getTagValue($this->imp, "infAdFisco", "\r\n");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7.5,
             'style' => '');
-        $this->pdf->textBox($x, $y, $w, $h, $textoObs[0], $aFont, 'T', 'L', 0, '', false);
-        $this->pdf->textBox($x, $y + 11.5, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '', false);
+        //$this->pdf->textBox($x, $y + 11.5, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
     }
 
     /**
