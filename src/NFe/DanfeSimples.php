@@ -2,6 +2,7 @@
 /*
  * Author Newton Pasqualini Filho (newtonpasqualini at gmail dot com)
  */
+
 namespace NFePHP\DA\NFe;
 
 use NFePHP\DA\Legacy\Dom;
@@ -198,15 +199,38 @@ class DanfeSimples extends DaCommon
     {
         $this->xml = $xml;
         if (!empty($xml)) {
-            $stdClass = simplexml_load_string($xml);
-            $json = json_encode($stdClass, JSON_OBJECT_AS_ARRAY);
-            $this->nfeArray = json_decode($json, JSON_OBJECT_AS_ARRAY);
-            if (!isset($this->nfeArray['NFe']['infNFe']['@attributes']['Id'])) {
-                throw new Exception('XML não parece ser uma NF-e!');
+            $this->dom = new Dom();
+            $this->dom->loadXML($this->xml);
+            if (empty($this->dom->getElementsByTagName("infNFe")->item(0))) {
+                throw new \Exception('Isso não é um NFe.');
             }
-            if ($this->nfeArray['protNFe']['infProt']['cStat'] != '100') {
-                throw new Exception('NF-e não autorizada!');
+            $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
+            $this->infNFe  = $this->dom->getElementsByTagName("infNFe")->item(0);
+            $this->ide     = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '55') {
+                throw new \Exception("O xml deve ser NF-e modelo 55.");
             }
+            $this->entrega    = $this->dom->getElementsByTagName("entrega")->item(0);
+            $this->retirada   = $this->dom->getElementsByTagName("retirada")->item(0);
+            $this->emit       = $this->dom->getElementsByTagName("emit")->item(0);
+            $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
+            $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
+            $this->enderDest  = $this->dom->getElementsByTagName("enderDest")->item(0);
+            $this->det        = $this->dom->getElementsByTagName("det");
+            $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
+            $this->dup        = $this->dom->getElementsByTagName('dup');
+            $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+            $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
+            $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
+            $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
+            $this->veicTransp = $this->dom->getElementsByTagName("veicTransp")->item(0);
+            $this->detPag     = $this->dom->getElementsByTagName("detPag");
+            $this->reboque    = $this->dom->getElementsByTagName("reboque")->item(0);
+            $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
+            $this->compra     = $this->dom->getElementsByTagName("compra")->item(0);
+            $this->tpEmis     = $this->getTagValue($this->ide, "tpEmis");
+            $this->tpImp      = $this->getTagValue($this->ide, "tpImp");
+            $this->infProt    = $this->dom->getElementsByTagName("infProt")->item(0);
         }
     }
 
@@ -263,30 +287,35 @@ class DanfeSimples extends DaCommon
         $totalVolumes = 0;
 
         // Normalizar o array de volumes quando tem apenas 1 volumes
-        if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])) {
-            $this->nfeArray['NFe']['infNFe']['transp']['vol'] = [
-                $this->nfeArray['NFe']['infNFe']['transp']['vol']
-            ];
-        }
+        // if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])) {
+        //     $this->nfeArray['NFe']['infNFe']['transp']['vol'] = [
+        //         $this->nfeArray['NFe']['infNFe']['transp']['vol']
+        //     ];
+        // }
 
-        foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
-            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';
+        foreach ($this->transp->getElementsByTagName('vol') as $vol) {
+            $espVolume = !empty($this->transp->getElementsByTagName("esp")->item(0)->nodeValue) ?
+                $this->transp->getElementsByTagName("esp")->item(0)->nodeValue : 'VOLUME';
+            
             //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
 
             if (!isset($volumes[$espVolume])) {
                 $volumes[$espVolume] = 0;
             }
-            
-            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
-            $volumes[$espVolume] += @$vol['qVol'];
-            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
-            $totalVolumes += @$vol['qVol'] ?: 0;
-            // Caso o peso bruto não esteja presente no XML, soma-se zero
-            $pesoB += @$vol['pesoB'] ?: 0;
-            // Caso o peso liquido não esteja presente no XML, soma-se zero
-            $pesoL += @$vol['pesoL'] ?: 0;
-        }
 
+            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $volumes[$espVolume] += !empty($vol->getElementsByTagName("qVol")->item(0)->nodeValue) ?
+                $vol->getElementsByTagName("qVol")->item(0)->nodeValue : 0;
+            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $totalVolumes += !empty($vol->getElementsByTagName("qVol")->item(0)->nodeValue) ?
+                $vol->getElementsByTagName("qVol")->item(0)->nodeValue : 0;
+            // Caso o peso bruto não esteja presente no XML, soma-se zero
+            $pesoB += !empty($vol->getElementsByTagName("pesoB")->item(0)->nodeValue) ?
+                $vol->getElementsByTagName("pesoB")->item(0)->nodeValue : 0;
+            // Caso o peso liquido não esteja presente no XML, soma-se zero
+            $pesoL += !empty($vol->getElementsByTagName("pesoL")->item(0)->nodeValue) ?
+                $vol->getElementsByTagName("pesoL")->item(0)->nodeValue : 0;
+        }
         // LINHA 1
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(
@@ -300,7 +329,15 @@ class DanfeSimples extends DaCommon
         );
 
         // LINHA 2
-        $dataEmissao = date('d/m/Y', strtotime("{$this->nfeArray['NFe']['infNFe']['ide']['dhEmi']}"));
+        $dEmi  = !empty($this->ide->getElementsByTagName("dEmi")->item(0)->nodeValue) ?
+            $this->ide->getElementsByTagName("dEmi")->item(0)->nodeValue : '';
+        if ($dEmi == '') {
+            $dEmi  = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
+                $this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue : '';
+            $aDemi = explode('T', $dEmi);
+            $dEmi  = $aDemi[0];
+        }
+        $dataEmissao = $this->ymdTodmy($dEmi);
         $c1 = ($this->maxW - ($this->margesq * 2)) / 4;
         $this->pdf->setFont('Arial', 'B', $pequeno ? 8 : 10);
         $this->pdf->cell($c1, $pequeno ? 4 : 5, "TIPO NF", 1, 0, 'C', 1);
@@ -308,8 +345,8 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(
             $c1,
             5,
-            "{$this->nfeArray['NFe']['infNFe']['ide']['tpNF']} - " .
-                                  ($this->nfeArray['NFe']['infNFe']['ide']['tpNF']==1 ? 'Saida':'Entrada'),
+            "{$this->ide->getElementsByTagName('tpNF')->item(0)->nodeValue} - " .
+                ($this->ide->getElementsByTagName('tpNF')->item(0)->nodeValue == 1 ? 'Saida' : 'Entrada'),
             1,
             0,
             'C',
@@ -324,14 +361,14 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', 'B', $pequeno ? 8 : 10);
         $this->pdf->cell($c1, $pequeno ? 4 : 5, "NUMERO", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell($c1, $pequeno ? 4 : 5, "{$this->nfeArray['NFe']['infNFe']['ide']['nNF']}", 1, 0, 'C', 1);
+        $this->pdf->cell($c1, $pequeno ? 4 : 5, "{$this->ide->getElementsByTagName('nNF')->item(0)->nodeValue}", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', 'B', $pequeno ? 8 : 10);
         $this->pdf->cell($c1, $pequeno ? 4 : 5, "SERIE", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell($c1, $pequeno ? 4 : 5, "{$this->nfeArray['NFe']['infNFe']['ide']['serie']}", 1, 1, 'C', 1);
+        $this->pdf->cell($c1, $pequeno ? 4 : 5, "{$this->ide->getElementsByTagName('serie')->item(0)->nodeValue}", 1, 1, 'C', 1);
 
         // LINHA 4
-        $chave = substr($this->nfeArray['NFe']['infNFe']['@attributes']['Id'], 3);
+        $chave = substr($this->infNFe->getAttribute("Id"), 3);
         // $this->pdf->setFont('Arial', 'B', $pequeno ? 7 : 10);
         // $this->pdf->cell($c1, $pequeno ? 4 : 5, "CHAVE DE ACESSO", 1, 0, 'C', 1);
         // $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
@@ -341,11 +378,23 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', 'B', $pequeno ? 8 : 10);
         $this->pdf->cell($c1, $pequeno ? 4 : 5, "PROTOCOLO", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $dataProto = date("d/m/Y H:i:s", strtotime($this->nfeArray['protNFe']['infProt']['dhRecbto']));
+        if (isset($this->nfeProc)) {
+            $texto  = !empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue)
+                ? $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue
+                : '';
+            $dtHora = $this->toDateTime(
+                $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
+            );
+            if ($texto != '' && $dtHora) {
+                $texto .= "  -  " . $dtHora->format('d/m/Y H:i:s');
+            }
+        } else {
+            $texto = '';
+        }
         $this->pdf->cell(
             ($c1 * 3),
             $pequeno ? 4 : 5,
-            "{$this->nfeArray['protNFe']['infProt']['nProt']} - {$dataProto}",
+            "{$texto}",
             1,
             1,
             'C',
@@ -355,7 +404,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->ln();
         $this->pdf->setFont('Arial', 'B', $pequeno ? 8 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "CHAVE DE ACESSO", 0, 1, 'C', 1);
-        
+
         $y = $this->pdf->getY();
         $this->pdf->setFillColor(0, 0, 0);
         if ($pequeno) {
@@ -363,7 +412,7 @@ class DanfeSimples extends DaCommon
             //que uma impressora de 203dpi consiga imprimir um código legível
             $this->pdf->code128($this->margesq * 2, $y, $chave, ($this->maxW - $this->margesq * 4), 15);
         } else {
-            $this->pdf->code128(($c1/2), $y, $chave, ($c1 * 3), 15);
+            $this->pdf->code128(($c1 / 2), $y, $chave, ($c1 * 3), 15);
         }
         $this->pdf->setFillColor(255, 255, 255);
         $this->pdf->ln();
@@ -384,33 +433,45 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->nfeArray['NFe']['infNFe']['emit']['xNome']}",
+            "{$this->emit->getElementsByTagName("xNome")->item(0)->nodeValue}",
             1,
             'C',
             false
         );
 
         // LINHA 8
-        $cpfCnpj = (isset($this->nfeArray['NFe']['infNFe']['emit']['CNPJ'])
-            ? $this->nfeArray['NFe']['infNFe']['emit']['CNPJ']
-            :$this->nfeArray['NFe']['infNFe']['emit']['CPF']);
-        $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$cpfCnpj}", 1, 0, 'C', 1);
+        if (!empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
+            $texto = $this->formatField(
+                $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue,
+                "###.###.###/####-##"
+            );
+        } else {
+            $texto = !empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue)
+                ? $this->formatField(
+                    $this->emit->getElementsByTagName("CPF")->item(0)->nodeValue,
+                    "###.###.###-##"
+                )
+                : '';
+        }
+        $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$texto}", 1, 0, 'C', 1);
+        $IE = $this->emit->getElementsByTagName("IE");
+        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : '';
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$this->nfeArray['NFe']['infNFe']['emit']['IE']}",
+            @"IE: {$texto}",
             1,
             1,
             'C',
             1
         );
         $cep = $this->formatField(
-            $this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['CEP'],
+            $this->getTagValue($this->enderEmit, "CEP"),
             "##.###-###"
         );
-        $enderecoEmit  = "{$this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['xMun']}"
-                       . " / {$this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['UF']}"
-                       . " - CEP {$cep}";
+        $enderecoEmit  = "{$this->getTagValue($this->enderEmit, "xMun")}"
+            . " / {$this->getTagValue($this->enderEmit, "UF")}"
+            . " - CEP {$cep}";
 
         // LINHA 9
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
@@ -425,59 +486,70 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->nfeArray['NFe']['infNFe']['dest']['xNome']}",
+            "{$this->dest->getElementsByTagName("xNome")->item(0)->nodeValue}",
             1,
             'C',
             false
         );
 
         // LINHA 12
-        $cpfCnpj = (isset($this->nfeArray['NFe']['infNFe']['dest']['CNPJ'])
-            ? $this->nfeArray['NFe']['infNFe']['dest']['CNPJ']
-            :$this->nfeArray['NFe']['infNFe']['dest']['CPF']);
-        $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$cpfCnpj}", 1, 0, 'C', 1);
+        if (!empty($this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
+            $texto = $this->formatField(
+                $this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue,
+                "###.###.###/####-##"
+            );
+        } else {
+            $texto = !empty($this->dest->getElementsByTagName("CPF")->item(0)->nodeValue)
+                ? $this->formatField(
+                    $this->dest->getElementsByTagName("CPF")->item(0)->nodeValue,
+                    "###.###.###-##"
+                )
+                : '';
+        }
+        $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$texto}", 1, 0, 'C', 1);
+
+        $IE    = $this->dest->getElementsByTagName("IE");
+        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : '';
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$this->nfeArray['NFe']['infNFe']['dest']['IE']}",
+            @"IE: {$texto}",
             1,
             1,
             'C',
             1
         );
-
-        if (isset($this->nfeArray['NFe']['infNFe']['entrega'])) {
-            $cep = $this->formatField(
-                $this->nfeArray['NFe']['infNFe']['entrega']['CEP'],
-                "##.###-###"
-            );
-            $enderecoLinha1 = "{$this->nfeArray['NFe']['infNFe']['entrega']['xLgr']}";
-            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['nro'])) {
-                $enderecoLinha1 .= ", {$this->nfeArray['NFe']['infNFe']['entrega']['nro']}";
+        if ($this->entrega) {
+            $cep = !empty($this->entrega->getElementsByTagName("CEP")->item(0)->nodeValue) ?
+                $this->entrega->getElementsByTagName("CEP")->item(0)->nodeValue : '';
+            $cep = $this->formatField($cep, "##.###-###");
+            $enderecoLinha1 = "{$this->entrega->getElementsByTagName("xLgr")->item(0)->nodeValue}";
+            if (!empty($this->entrega->getElementsByTagName("nro")->item(0)->nodeValue)) {
+                $enderecoLinha1 .= ", {$this->entrega->getElementsByTagName("nro")->item(0)->nodeValue}";
             }
             $enderecoLinha2 = '';
-            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['xCpl'])) {
-                $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['entrega']['xCpl']} - ";
+            if (!empty($this->entrega->getElementsByTagName("xCpl")->item(0)->nodeValue)) {
+                $enderecoLinha2 .= "{$this->entrega->getElementsByTagName("xCpl")->item(0)->nodeValue} - ";
             }
-            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['entrega']['xMun']}"
-                             . " / {$this->nfeArray['NFe']['infNFe']['entrega']['UF']}"
-                             . " - CEP {$cep}";
+            $enderecoLinha2 .= "{$this->entrega->getElementsByTagName("xMun")->item(0)->nodeValue}"
+                . " / {$this->entrega->getElementsByTagName("UF")->item(0)->nodeValue}"
+                . " - CEP {$cep}";
         } else {
-            $cep = $this->formatField(
-                $this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP'],
-                "##.###-###"
-            );
-            $enderecoLinha1 = "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xLgr']}";
-            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['nro'])) {
-                $enderecoLinha1 .= ", {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['nro']}";
+            $cep = !empty($this->dest->getElementsByTagName("CEP")->item(0)->nodeValue)
+                ? $this->dest->getElementsByTagName("CEP")->item(0)->nodeValue
+                : '';
+            $cep = $this->formatField($cep, "##.###-###");
+            $enderecoLinha1 = "{$this->dest->getElementsByTagName("xLgr")->item(0)->nodeValue}";
+            if (!empty($this->dest->getElementsByTagName("nro")->item(0)->nodeValue)) {
+                $enderecoLinha1 .= ", {$this->dest->getElementsByTagName("nro")->item(0)->nodeValue}";
             }
             $enderecoLinha2 = '';
-            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xCpl'])) {
-                $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xCpl']} - ";
+            if (!empty($this->dest->getElementsByTagName("xCpl")->item(0)->nodeValue)) {
+                $enderecoLinha2 .= "{$this->dest->getElementsByTagName("xCpl")->item(0)->nodeValue} - ";
             }
-            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xMun']}"
-                             . " / {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['UF']}"
-                             . " - CEP {$cep}";
+            $enderecoLinha2 .= "{$this->dest->getElementsByTagName("xMun")->item(0)->nodeValue}"
+                . " / {$this->dest->getElementsByTagName("UF")->item(0)->nodeValue}"
+                . " - CEP {$cep}";
         }
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
@@ -485,9 +557,10 @@ class DanfeSimples extends DaCommon
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
-
-        if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9
-            && isset($this->nfeArray['NFe']['infNFe']['transp']['transporta'])
+        
+        if (
+            $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue != 9
+            && $this->transporta
         ) {
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
@@ -495,14 +568,14 @@ class DanfeSimples extends DaCommon
             $this->pdf->cell(
                 ($c1 * 4),
                 $pequeno ? 5 : 6,
-                "{$this->nfeArray['NFe']['infNFe']['transp']['transporta']['xNome']}",
+                "{$this->transporta->getElementsByTagName("xNome")->item(0)->nodeValue}",
                 1,
                 1,
                 'C',
                 1
             );
         }
-
+        
         if ($totalVolumes > 0) {
             foreach ($volumes as $esp => $qVol) {
                 $this->pdf->cell(
@@ -519,7 +592,7 @@ class DanfeSimples extends DaCommon
 
         $pesoL = number_format($pesoL, 3, ',', '.');
         $pesoB = number_format($pesoB, 3, ',', '.');
-        if($pesoL > 0 || $pesoB > 0){
+        if ($pesoL > 0 || $pesoB > 0) {
             $this->pdf->cell(
                 ($c1 * 4),
                 $pequeno ? 5 : 6,
@@ -533,17 +606,17 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "TOTAL DA NF-e", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
+        $vNF = number_format($this->ICMSTot->getElementsByTagName("vNF")->item(0)->nodeValue, 2, ',', '.');
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
-        if (isset($this->nfeArray['NFe']['infNFe']['infAdic'])) {
+        if (isset($this->infAdic)) {
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
             $this->pdf->multiCell(
                 ($c1 * 4),
                 $pequeno ? 3 : 5,
-                "{$this->nfeArray['NFe']['infNFe']['infAdic']['infCpl']}",
+                "{$this->getTagValue($this->infAdic, "infCpl")}",
                 1,
                 1,
                 'J',
