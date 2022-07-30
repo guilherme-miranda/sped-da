@@ -750,6 +750,16 @@ class Fpdf
             }
         }
         if ($txt !== '') {
+            if (is_string($txt)) {
+                //remover espaços desnecessários
+                $txt = trim($txt);
+                //converter o charset para o fpdf
+                $txt = utf8_decode($txt);
+                //decodifica os caracteres html no xml
+                $txt = html_entity_decode($txt);
+            } else {
+                $txt = (string) $txt;
+            }
             if ($align == 'R') {
                 $dx = $w-$this->cMargin-$this->getStringWidth($txt);
             } elseif ($align == 'C') {
