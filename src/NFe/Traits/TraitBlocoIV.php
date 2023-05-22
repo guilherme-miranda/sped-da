@@ -18,6 +18,7 @@ trait TraitBlocoIV
         $valor = $this->getTagValue($this->ICMSTot, 'vNF');
         $desconto = $this->getTagValue($this->ICMSTot, 'vDesc');
         $frete = $this->getTagValue($this->ICMSTot, 'vFrete');
+        $outros = $this->getTagValue($this->ICMSTot, 'vOutro');
         $bruto = $valor + $desconto - $frete;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
@@ -107,7 +108,8 @@ trait TraitBlocoIV
             false
         );
 
-        $texto = "Frete R$";
+        //Acréscimo e Frete
+        $texto = "Acréscimo R$";
         $this->pdf->textBox(
             $this->margem,
             $y + $y1 + $y2 + $y3,
@@ -121,7 +123,7 @@ trait TraitBlocoIV
             '',
             false
         );
-        $texto = number_format((float) $frete, 2, ',', '.');
+        $texto = number_format((float) ($frete + $outros), 2, ',', '.');
         $y4 = $this->pdf->textBox(
             $this->margem + $this->wPrint / 2,
             $y + $y1 + $y2 + $y3,
@@ -135,6 +137,8 @@ trait TraitBlocoIV
             '',
             false
         );
+
+
         $fsize = 10;
         if ($this->paperwidth < 70) {
             $fsize = 8;
