@@ -992,8 +992,8 @@ class Danfe extends DaCommon
                 $yImg  = round(($h - $nImgH) / 2, 0) + $y;
                 //estabelecer posições do texto
                 $x1 = round($xImg + $nImgW + 1, 0);
-                $y1 = round($h / 3 + $y, 0);
-                $tw = round(2 * $w / 3, 0);
+                $y1 = round($h / 4 + $y, 0);
+                $tw = round(1.98 * $w / 3, 0);
             } elseif ($this->logoAlign == 'C') {
                 $nImgH = round($h / 3, 0);
                 $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
@@ -1028,6 +1028,7 @@ class Danfe extends DaCommon
         }
         // monta as informações apenas se diferente de full logo
         if ($this->logoAlign !== 'F') {
+            $x1 = $x1 - 1;
             //Nome emitente
             $aFont = ['font' => $this->fontePadrao, 'size' => 12, 'style' => 'B'];
             $texto = $this->emit->getElementsByTagName("xNome")->item(0)->nodeValue;
@@ -1035,9 +1036,7 @@ class Danfe extends DaCommon
             //endereço
             $y1     = $y1 + 5;
             $aFont  = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
-            $fone   = !empty($this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue)
-                ? $this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue
-                : '';
+
             $lgr    = $this->getTagValue($this->enderEmit, "xLgr");
             $nro    = $this->getTagValue($this->enderEmit, "nro");
             $cpl    = $this->getTagValue($this->enderEmit, "xCpl", " - ");
@@ -1047,9 +1046,20 @@ class Danfe extends DaCommon
             $mun    = $this->getTagValue($this->enderEmit, "xMun");
             $UF     = $this->getTagValue($this->enderEmit, "UF");
             $texto  = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - "
-                . $CEP . "\n" . $mun . " - " . $UF . " "
-                . "Fone/Fax: " . $fone;
-            $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
+                . $CEP . "\n" . $mun . " - " . $UF;
+            $this->pdf->textBox($x1, $y1, $tw, 7, $texto, $aFont, 'T', 'C', 0, '');
+
+            $y1     = $y1 + 9;
+            //verifica se telefone não é vazio
+            if (!empty($this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue)) {
+                $fone = $this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue;
+                $fone = strlen($fone) >= 11 ? $this->formatField($fone, "(##)#####-####") : $this->formatField($fone, "(##)####-####");
+            } else {
+                $fone = '';
+            }
+
+            $texto = "Fone: " . $fone;
+            $this->pdf->textBox($x1, $y1, $tw, 7, $texto, $aFont, 'T', 'C', 0, '');
         }
 
         //####################################################################################
@@ -1501,7 +1511,7 @@ class Danfe extends DaCommon
         $x     += $w;
         $w     = round(($maxW - $w1 - $wx - 8) / 2, 0);
         $w3    = $w;
-        $texto = 'FONE / FAX';
+        $texto = 'FONE';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = !empty($this->dest->getElementsByTagName("fone")->item(0)->nodeValue)
@@ -1686,7 +1696,7 @@ class Danfe extends DaCommon
         //FONE / FAX
         $x     += $w;
         $w     = $maxW - $w - $w1;
-        $texto = 'FONE / FAX';
+        $texto = 'FONE';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = !empty($this->entrega->getElementsByTagName("fone")->item(0)->nodeValue) ?
@@ -1839,7 +1849,7 @@ class Danfe extends DaCommon
         //FONE / FAX
         $x     += $w;
         $w     = $maxW - $w - $w1;
-        $texto = 'FONE / FAX';
+        $texto = 'FONE';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = !empty($this->retirada->getElementsByTagName("fone")->item(0)->nodeValue) ?
