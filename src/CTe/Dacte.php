@@ -1018,7 +1018,7 @@ class Dacte extends DaCommon
             $resp['status'] = false;
             $resp['message'][] = 'CTe NÃO PROTOCOLADO';
         } else {
-            if ($this->getTagValue($this->ide, "tpAmb") == '2' && $this->preVisualizar == '0') {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2') {
                 $resp['status'] = false;
                 $resp['message'][] = "CTe EMITIDO EM HOMOLOGAÇÃO";
             } elseif ($this->preVisualizar == '1') {
