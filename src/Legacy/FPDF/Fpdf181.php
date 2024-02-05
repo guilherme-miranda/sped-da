@@ -2,7 +2,7 @@
 
 namespace NFePHP\DA\Legacy\FPDF;
 
-class FPDF
+class Fpdf181
 {
     const FPDF_VERSION = '1.81';
     const FPDF_FONTPATH = 'font/';
@@ -97,7 +97,7 @@ class FPDF
         $this->withAlpha = false;
         $this->ws = 0;
 
-        $this->fontpath = __DIR__. FPDF_FONTPATH;
+        $this->fontpath = __DIR__. self::FPDF_FONTPATH;
 
         // Core fonts
         $this->coreFonts = [
@@ -2056,7 +2056,7 @@ class FPDF
 
     protected function putInfo()
     {
-        $this->metadata['Producer'] = 'FPDF ' . FPDF_VERSION;
+        $this->metadata['Producer'] = 'FPDF ' . self::FPDF_VERSION;
         $this->metadata['CreationDate'] = 'D:' . @date('YmdHis');
         foreach ($this->metadata as $key => $value) {
             $this->put('/' . $key . ' ' . $this->textString($value));

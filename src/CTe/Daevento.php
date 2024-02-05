@@ -15,10 +15,8 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
  */
 
-use Exception;
-use NFePHP\DA\Legacy\Dom;
-use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Common\DaCommon;
+use NFePHP\DA\Legacy\Pdf;
 
 class Daevento extends DaCommon
 {
@@ -131,32 +129,27 @@ class Daevento extends DaCommon
         $margEsq = $this->margesq;
         $margDir = $this->margesq;
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $xInic = $this->margesq;
+        $yInic = $this->margsup;
         if ($this->orientacao == 'P') {
-            // posição inicial do relatorio
-            $xInic = 1;
-            $yInic = 1;
-            if ($this->papel == 'A4') { //A4 210x297mm
-                $maxW = 210;
-                $maxH = 297;
+            if ($this->papel == 'A4') { // A4 210x297mm
+                $this->maxW = 210;
+                $this->maxH = 297;
             }
         } else {
-            // posição inicial do relatorio
-            $xInic = 5;
-            $yInic = 5;
-            if ($papel == 'A4') {
-                //A4 210x297mm
-                $maxH = 210;
-                $maxW = 297;
+            if ($this->papel == 'A4') { // A4 210x297mm
+                $this->maxH = 210;
+                $this->maxW = 297;
             }
         }
-        //largura imprimivel em mm
-        $this->wPrint = $maxW - ($margEsq + $xInic);
-        //comprimento imprimivel em mm
-        $this->hPrint = $maxH - ($margSup + $yInic);
+        // largura imprimivel em mm
+        $this->wPrint = $this->maxW - ($this->margesq * 2);
+        // comprimento imprimivel em mm
+        $this->hPrint = $this->maxH - $this->margsup - $this->marginf;
         // estabelece contagem de paginas
         $this->pdf->aliasNbPages();
         // fixa as margens
-        $this->pdf->setMargins($margEsq, $margSup, $margDir);
+        $this->pdf->setMargins($this->margesq, $this->margsup);
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
@@ -196,7 +189,7 @@ class Daevento extends DaCommon
         $maxW = $this->wPrint;
         //####################################################################################
         //coluna esquerda identificação do emitente
-        $w = round($maxW * 0.41, 0);// 80;
+        $w = round($maxW * 0.41, 0); // 80;
         if ($this->orientacao == 'P') {
             $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         } else {
@@ -366,19 +359,18 @@ class Daevento extends DaCommon
             $retVal = $sY + 2;
         }
         if ($this->tpAmb != 1) {
-            $x = 10;
-            if ($this->orientacao == 'P') {
+           if ($this->orientacao == 'P') {
                 $y = round($this->hPrint * 2 / 3, 0);
             } else {
                 $y = round($this->hPrint / 2, 0);
             }
             $h = 5;
-            $w = $maxW - (2 * $x);
+            $w = $maxW;
             $this->pdf->setTextColor(90, 90, 90);
             $texto = "SEM VALOR FISCAL";
-            $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
+            $aFont = ['font' => $this->fontePadrao,'size' => 48,'style' => 'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
+            $aFont = ['font' => $this->fontePadrao,'size' => 30,'style' => 'B'];
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pdf->textBox($x, $y + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
@@ -404,31 +396,43 @@ class Daevento extends DaCommon
         $y += 5;
         $this->pdf->textBox($x, $y, $maxW, 190);
         if ($this->tpEvento == '110110') {
-            $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, "Grupo", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = $maxW, $y, $maxW, 5, "Campo", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, "Número", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, "Valor", $aFont, 'T', 'C', 0, '', false);
-
             $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
             $i = 0;
-            $numlinhas = 1;
             while ($i < $this->infCorrecao->length) {
-                $x = 0;
-                $y = $numlinhas == 1 ? ($y + 5) : ($y + (5 * $numlinhas));
                 $maxW = $this->wPrint;
                 $grupo = $this->infCorrecao->item($i)->getElementsByTagName('grupoAlterado')->item(0)->nodeValue;
                 $campo = $this->infCorrecao->item($i)->getElementsByTagName('campoAlterado')->item(0)->nodeValue;
                 $numero = 1;
                 if (!empty($this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0))) {
-                    $numero =$this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
+                    $numero = $this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
                 }
                 $valor = $this->infCorrecao->item($i)->getElementsByTagName('valorAlterado')->item(0)->nodeValue;
+                $lines = $this->pdf->getNumLines($valor, ($this->wPrint - 35), $aFont);
 
                 $i++;
-                $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, $grupo, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = $maxW, $y, $maxW, 5, $campo, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, $numero, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, $valor, $aFont, 'T', 'C', 0);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x, $y, 30, 5, "Grupo Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 30, $y, 50, 5, $grupo, $aFont, 'T', 'L', 0, '', false);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x + 80, $y, 30, 5, "Campo Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 110, $y, 50, 5, $campo, $aFont, 'T', 'L', 0, '', false);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x + 160, $y, 30, 5, "Número Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 190, $y, 10, 5, $numero, $aFont, 'T', 'L', 0, '', false);
+
+                $y += 5;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x, $y, 30, 5, "Valor Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 30, $y, ($this->wPrint - 35), 5, $valor, $aFont, 'T', 'L', 0, '', false);
+                $y += (3 * $lines) + 3;
+                $this->pdf->line($x, $y, $this->wPrint + 6, $y);
             }
         } elseif ($this->tpEvento == '110111') {
             $texto = $this->xJust;
@@ -456,15 +460,15 @@ class Daevento extends DaCommon
                 . "\n O Evento deve ser recebido e mantido em arquivo eletrônico XML e "
                 . "pode ser consultada através dos Portais das SEFAZ.";
         }
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'I');
+        $aFont = ['font' => $this->fontePadrao,'size' => 10,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 20, $texto, $aFont, 'T', 'C', 0, '', false);
-        $y = $this->hPrint - 4;
+        $y = $this->hPrint;
         $texto = "Impresso em  " . date('d/m/Y   H:i:s') . ' ' . $this->creditos;
-        $w = $this->wPrint - 4;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
-        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
+        $w = $this->wPrint;
+        $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
+        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'C', 0, '');
         $texto = $this->powered ? "Powered by NFePHP®" : '';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
+        $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     }
 }
