@@ -280,7 +280,6 @@ class DanfeSimples extends DaCommon
         $this->pdf->settextcolor(0, 0, 0);
         //Configura o pagebreak para não quebrar com 2cm do bottom.
         $this->pdf->setAutoPageBreak(true, $this->margsup);
-
         $volumes = [];
         $pesoL = 0.000;
         $pesoB = 0.000;
@@ -296,7 +295,7 @@ class DanfeSimples extends DaCommon
         foreach ($this->transp->getElementsByTagName('vol') as $vol) {
             $espVolume = !empty($this->transp->getElementsByTagName("esp")->item(0)->nodeValue) ?
                 $this->transp->getElementsByTagName("esp")->item(0)->nodeValue : 'VOLUME';
-            
+
             //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
 
             if (!isset($volumes[$espVolume])) {
@@ -433,7 +432,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->convertToIso($this->emit->getElementsByTagName("xNome")->item(0)->nodeValue)}",
+            "{$this->emit->getElementsByTagName("xNome")->item(0)->nodeValue}",
             1,
             'C',
             false
@@ -459,7 +458,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"RG/IE: {$texto}",
+            @"IE: {$texto}",
             1,
             1,
             'C',
@@ -475,7 +474,7 @@ class DanfeSimples extends DaCommon
 
         // LINHA 9
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, $this->convertToIso($enderecoEmit), 1, 1, 'C', 1);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoEmit}", 1, 1, 'C', 1);
 
         // LINHA 10
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
@@ -486,7 +485,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->convertToIso($this->dest->getElementsByTagName("xNome")->item(0)->nodeValue)}",
+            "{$this->dest->getElementsByTagName("xNome")->item(0)->nodeValue}",
             1,
             'C',
             false
@@ -506,6 +505,7 @@ class DanfeSimples extends DaCommon
                 )
                 : '';
         }
+
         $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$texto}", 1, 0, 'C', 1);
 
         $IE    = $this->dest->getElementsByTagName("IE");
@@ -513,7 +513,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"RG/IE: {$texto}",
+            @"IE: {$texto}",
             1,
             1,
             'C',
@@ -553,11 +553,11 @@ class DanfeSimples extends DaCommon
         }
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$this->convertToIso($enderecoLinha1)}", 1, 1, 'C', 1);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha1}", 1, 1, 'C', 1);
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$this->convertToIso($enderecoLinha2)}", 1, 1, 'C', 1);
-        
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
+
         if (
             $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue != 9
             && $this->transporta
@@ -568,14 +568,14 @@ class DanfeSimples extends DaCommon
             $this->pdf->cell(
                 ($c1 * 4),
                 $pequeno ? 5 : 6,
-                "{$this->convertToIso($this->transporta->getElementsByTagName("xNome")->item(0)->nodeValue)}",
+                "{$this->transporta->getElementsByTagName("xNome")->item(0)->nodeValue}",
                 1,
                 1,
                 'C',
                 1
             );
         }
-        
+
         if ($totalVolumes > 0) {
             foreach ($volumes as $esp => $qVol) {
                 $this->pdf->cell(
@@ -610,23 +610,22 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
         if (isset($this->infAdic)) {
+            $texto = $this->getTagValue($this->infAdic, "infCpl");
+            //Se pequeno, limita o texto a 160 caracteres
+            if ($pequeno) {
+                $texto = substr($texto, 0, 160);
+            }
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
             $this->pdf->multiCell(
                 ($c1 * 4),
                 $pequeno ? 3 : 5,
-                "{$this->getTagValue($this->infAdic, "infCpl")}",
-                1,
+                $texto,
                 1,
                 'J',
                 1
             );
         }
     }
-
-    private function convertToIso($text) {
-        return mb_convert_encoding($text, 'ISO-8859-1', ['UTF-8', 'windows-1252']);
-    }
-
 }

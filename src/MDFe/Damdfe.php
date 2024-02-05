@@ -706,8 +706,7 @@ class Damdfe extends DaCommon
         $texto = 'Data e Hora de Emissão';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x1, $y, $x3 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $data = explode('T', $this->dhEmi);
-        $texto = $this->ymdTodmy($data[0]) . ' - ' . $data[1];
+        $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ? date('d/m/Y H:i:s', strtotime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox($x1, $y + 4, $x3 - 1, 4, $texto, $aFont, 'T', 'L', 0, '', false);
         $x1 += $x3;

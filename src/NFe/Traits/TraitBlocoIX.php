@@ -15,21 +15,21 @@ trait TraitBlocoIX
         //$valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
         //$trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         //$texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
-        $texto = $this->getTagValue($this->infAdic, "infCpl");
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox(
-            $this->margem,
-            $y,
-            $this->wPrint,
-            $this->bloco9H,
-            str_replace(";", "\n", $texto),
-            $aFont,
-            'T',
-            'C',
-            false,
-            '',
-            true
-        );
+        // $texto = $this->getTagValue($this->infAdic, "infCpl");
+        // $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        // $this->pdf->textBox(
+        //     $this->margem,
+        //     $y,
+        //     $this->wPrint,
+        //     $this->bloco9H,
+        //     str_replace(";", "\n", $texto),
+        //     $aFont,
+        //     'T',
+        //     'C',
+        //     false,
+        //     '',
+        //     true
+        // );
         if ($this->paperwidth < 70) {
             $fsize = 5;
             $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
@@ -42,7 +42,7 @@ trait TraitBlocoIX
             str_replace(";", "\n", $this->infCpl),
             $aFont,
             'T',
-            'L',
+            'C',
             false,
             '',
             false
