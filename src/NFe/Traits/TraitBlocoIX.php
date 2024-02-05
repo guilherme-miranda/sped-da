@@ -2,6 +2,8 @@
 
 namespace NFePHP\DA\NFe\Traits;
 
+use NFePHP\DA\Legacy\Pdf;
+
 /**
  * Bloco Informações sobre impostos aproximados
  */
@@ -13,21 +15,21 @@ trait TraitBlocoIX
         //$valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
         //$trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         //$texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
-        $texto = $this->getTagValue($this->infAdic, "infCpl");
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox(
-            $this->margem,
-            $y,
-            $this->wPrint,
-            $this->bloco9H,
-            str_replace(";", "\n", $texto),
-            $aFont,
-            'T',
-            'C',
-            false,
-            '',
-            true
-        );
+        // $texto = $this->getTagValue($this->infAdic, "infCpl");
+        // $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        // $this->pdf->textBox(
+        //     $this->margem,
+        //     $y,
+        //     $this->wPrint,
+        //     $this->bloco9H,
+        //     str_replace(";", "\n", $texto),
+        //     $aFont,
+        //     'T',
+        //     'C',
+        //     false,
+        //     '',
+        //     true
+        // );
         if ($this->paperwidth < 70) {
             $fsize = 5;
             $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
@@ -40,14 +42,14 @@ trait TraitBlocoIX
             str_replace(";", "\n", $this->infCpl),
             $aFont,
             'T',
-            'L',
+            'C',
             false,
             '',
             false
         );
-        return $this->bloco9H + $y;
+        return $y + 3;
     }
-    
+
     /**
      * Calcula a altura do bloco IX
      * Depende do conteudo de infCpl
@@ -60,7 +62,7 @@ trait TraitBlocoIX
         $wprint = $this->paperwidth - (2 * $this->margem);
         $logoAlign = 'L';
         $orientacao = 'P';
-        $pdf = new \NFePHP\DA\Legacy\Pdf($orientacao, 'mm', $papel);
+        $pdf = new Pdf($orientacao, 'mm', $papel);
         $fsize = 7;
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         if ($this->paperwidth < 70) {
@@ -69,7 +71,12 @@ trait TraitBlocoIX
         }
         $linhas = str_replace(';', "\n", $this->infCpl);
         $hfont = (imagefontheight($fsize)/72)*13;
-        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont)+2;
+        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont);
+        if (!empty($this->textoExtra)) {
+            $linhas = str_replace(';', "\n", $this->textoExtra);
+            $hfont = (imagefontheight($fsize)/72)*13;
+            $numlinhas += $pdf->getNumLines($linhas, $wprint, $aFont);
+        }
         return (int) ($numlinhas * $hfont) + 2;
     }
 }
