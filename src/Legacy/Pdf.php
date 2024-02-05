@@ -15,6 +15,7 @@ class Pdf extends Fpdf
     private $setTo = ["A" => 0, "B" => 0, "C" => 0];           // converter para
     private $jStart = ["A"=> 103, "B"=> 104, "C" => 105];      // Caracteres de seleção do grupo 128
     private $jSwap = ["A" => 101, "B" => 100, "C" => 99];      // Caracteres de troca de grupo
+    private $angle = 0;
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
@@ -805,6 +806,7 @@ class Pdf extends Fpdf
     */
     public function dashedVLine($x, $y, $w, $yfinal, $n)
     {
+        $this->setDrawColor(150,150,150);
         $this->setLineWidth($w);
         if ($y > $yfinal) {
             $aux = $yfinal;
@@ -891,7 +893,7 @@ class Pdf extends Fpdf
             //remover espaços desnecessários
             $text = trim($text);
             //converter o charset para o fpdf
-            $text = utf8_decode($text);
+            $text = $this->convertToIso($text);
             //decodifica os caracteres html no xml
             $text = html_entity_decode($text);
         } else {
@@ -1032,7 +1034,7 @@ class Pdf extends Fpdf
             //remover espaços desnecessários
             $text = trim($text);
             //converter o charset para o fpdf
-            $text = utf8_decode($text);
+            $text = $this->convertToIso($text);
             //decodifica os caracteres html no xml
             $text = html_entity_decode($text);
         } else {
@@ -1115,4 +1117,15 @@ class Pdf extends Fpdf
         $this->rotate(0, $x, $y);
         return ($y1 - $y) - $incY;
     }
+
+    /**
+     * Converte os caracteres para ISO-88591.
+     *
+     * @param string $text
+     * @return string
+     */
+    private function convertToIso($text) {
+        return mb_convert_encoding($text, 'ISO-8859-1', ['UTF-8', 'windows-1252']);
+    }
+
 }

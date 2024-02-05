@@ -433,7 +433,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->emit->getElementsByTagName("xNome")->item(0)->nodeValue}",
+            "{$this->convertToIso($this->emit->getElementsByTagName("xNome")->item(0)->nodeValue)}",
             1,
             'C',
             false
@@ -459,7 +459,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$texto}",
+            @"RG/IE: {$texto}",
             1,
             1,
             'C',
@@ -475,7 +475,7 @@ class DanfeSimples extends DaCommon
 
         // LINHA 9
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoEmit}", 1, 1, 'C', 1);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, $this->convertToIso($enderecoEmit), 1, 1, 'C', 1);
 
         // LINHA 10
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
@@ -486,7 +486,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->multiCell(
             ($c1 * 4),
             $pequeno ? 4 : 5,
-            "{$this->dest->getElementsByTagName("xNome")->item(0)->nodeValue}",
+            "{$this->convertToIso($this->dest->getElementsByTagName("xNome")->item(0)->nodeValue)}",
             1,
             'C',
             false
@@ -513,7 +513,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$texto}",
+            @"RG/IE: {$texto}",
             1,
             1,
             'C',
@@ -553,10 +553,10 @@ class DanfeSimples extends DaCommon
         }
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha1}", 1, 1, 'C', 1);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$this->convertToIso($enderecoLinha1)}", 1, 1, 'C', 1);
 
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$this->convertToIso($enderecoLinha2)}", 1, 1, 'C', 1);
         
         if (
             $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue != 9
@@ -568,7 +568,7 @@ class DanfeSimples extends DaCommon
             $this->pdf->cell(
                 ($c1 * 4),
                 $pequeno ? 5 : 6,
-                "{$this->transporta->getElementsByTagName("xNome")->item(0)->nodeValue}",
+                "{$this->convertToIso($this->transporta->getElementsByTagName("xNome")->item(0)->nodeValue)}",
                 1,
                 1,
                 'C',
@@ -624,4 +624,9 @@ class DanfeSimples extends DaCommon
             );
         }
     }
+
+    private function convertToIso($text) {
+        return mb_convert_encoding($text, 'ISO-8859-1', ['UTF-8', 'windows-1252']);
+    }
+
 }
