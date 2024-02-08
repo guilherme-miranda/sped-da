@@ -2251,17 +2251,17 @@ class Danfe extends DaCommon
         $the_field = $this->ICMSTot->getElementsByTagName($campoImposto)->item(0);
         if (isset($the_field)) {
             $value = $the_field->nodeValue;
-            if ($campoImposto == 'vICMS') { // soma junto ao ICMS o FCP
-                $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCP')->item(0);
-                if (isset($the_field_aux)) {
-                    $value2 = $the_field_aux->nodeValue;
-                }
-            } else if ($campoImposto == 'vST') { // soma junto ao ICMS ST o FCP ST
-                $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCPST')->item(0);
-                if (isset($the_field_aux)) {
-                    $value2 = $the_field_aux->nodeValue;
-                }
-            }
+            // if ($campoImposto == 'vICMS') { // soma junto ao ICMS o FCP
+            //     $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCP')->item(0);
+            //     if (isset($the_field_aux)) {
+            //         $value2 = $the_field_aux->nodeValue;
+            //     }
+            // } else if ($campoImposto == 'vST') { // soma junto ao ICMS ST o FCP ST
+            //     $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCPST')->item(0);
+            //     if (isset($the_field_aux)) {
+            //         $value2 = $the_field_aux->nodeValue;
+            //     }
+            // }
         }
         $valorImposto = number_format($value + $value2, 2, ",", ".");
 
@@ -2743,6 +2743,7 @@ class Danfe extends DaCommon
                 500
             )
             : '';
+        //$infAdProd = '';
         if (!empty($infAdProd)) {
             $infAdProd = trim($infAdProd);
             $infAdProd .= ' ';
@@ -2774,12 +2775,11 @@ class Danfe extends DaCommon
             }
         }
         $infAdProd .= $this->getTagValue($med, 'cProdANVISA', 'ANVISA: ');
-
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
-        //$tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
-        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $nFCI : '');
+        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? "\n" . $loteTxt . $impostos . $nFCI : '');
+        //$tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $nFCI : '');
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
         //decodifica os caracteres html no xml
@@ -3231,6 +3231,8 @@ class Danfe extends DaCommon
                     false
                 );
                 $aFont = $oldfont;
+                //FCP
+
 
                 //NCM
                 $texto = !empty($prod->getElementsByTagName("NCM")->item(0)->nodeValue) ?
