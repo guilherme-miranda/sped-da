@@ -2683,7 +2683,11 @@ class Danfe extends DaCommon
         if (!isset($valor_original)) {
             return "";
         }
-        $valor_original = $valor_original->nodeValue;
+        if(floatval($valor_original->nodeValue) > 0) { 
+            $valor_original = $valor_original->nodeValue;
+        } else {
+            return "";
+        }
         $valor          = !empty($valor_original) ? number_format($valor_original, 2, ",", ".") : '';
 
         if ($valor != "") {
