@@ -3181,6 +3181,7 @@ class Danfe extends DaCommon
                     $yTrib = 0;
                 }
                 $h = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
+                
                 $hUsado += $h;
 
                 $yTrib += $y;
@@ -3220,7 +3221,7 @@ class Danfe extends DaCommon
                 $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
                 $this->pdf->textBox(
                     $x - $w2,
-                    $y + 4,
+                    $y + $h + 2,
                     $this->wPrint - ($w1 + $w2) - 2,
                     22,
                     $veicnovo,
