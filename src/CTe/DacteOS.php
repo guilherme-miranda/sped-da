@@ -127,7 +127,7 @@ class DacteOS extends DaCommon
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             // adicionar outros modais
             $this->infCteComp = $this->dom->getElementsByTagName("infCteComp")->item(0);
-            $this->chaveCTeRef = $this->getTagValue($this->infCteComp, "chave");
+            $this->chaveCTeRef = $this->getTagValue($this->infCteComp, "chCTe");
             $this->vPrest = $this->dom->getElementsByTagName("vPrest")->item(0);
             $this->Comp = $this->dom->getElementsByTagName("Comp");
             $this->infNF = $this->dom->getElementsByTagName("infNF");
@@ -265,7 +265,7 @@ class DacteOS extends DaCommon
         //coloca o cabeçalho
         $y += 70;
         $r = $this->tomador($x, $y);
-        if ($this->tpCTe == '0') {
+        if ($this->tpCTe == '0' || $this->tpCTe == '3') {
             $r = $this->cabecalho($x, $yInic, $pag, $totPag);
             //Normal
             $y += 10;
@@ -326,7 +326,7 @@ class DacteOS extends DaCommon
                 $y += 37;
             }
         } else {
-            $r = $this->cabecalho($x, $y, $pag, $totPag);
+            $r = $this->cabecalho($x, $yInic, $pag, $totPag);
             //Complementado
             $y += 10;
             $x = $xInic;
@@ -1399,7 +1399,7 @@ class DacteOS extends DaCommon
         $descr1 = 'CHAVE DO CT-E COMPLEMENTADO';
         $descr2 = 'VALOR COMPLEMENTADO';
         $y += 3.4;
-        $this->pdf->line($x, $y, $w + 1, $y);
+        $this->pdf->line($x, $y, $w + $x, $y);
         $texto = $descr1;
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
