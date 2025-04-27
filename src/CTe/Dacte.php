@@ -1603,16 +1603,51 @@ class Dacte extends DaCommon
         //01 = KG (QUILOS)
         $qCarga = 0;
         $hasKg = false;
+        $qCargaPesoBruto = 0;
+        $qCargaPesoBaseCalculo = 0;
         foreach ($this->infQ as $infQ) {
             if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
                 if ($this->getTagValue($infQ, "cUnid") == '01') {
                     //Verifica se tem alguma unidade de medida em KG no array, caso sim, converte toda a carga em KG
                     $hasKg = true;
                 }
-                $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ?
-                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                if ($this->getTagValue($infQ, "tpMed") == 'PESO BRUTO') {
+                    $qCargaPesoBruto += $this->getTagValue($infQ, "cUnid") == '01' ? 
+                        $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                } elseif ($this->getTagValue($infQ, "tpMed") == 'PESO BASE DE CALCULO') {
+                    $qCargaPesoBaseCalculo += $this->getTagValue($infQ, "cUnid") == '01' ? 
+                        $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                } else {
+                    $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ?
+                        $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                }
             }
         }
+
+        $qCarga = 0;
+        $hasKg = false;
+        $qCargaPesoBruto = 0;
+        $qCargaPesoBaseCalculo = 0;
+        foreach ($this->infQ as $infQ) {
+            if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
+                if ($this->getTagValue($infQ, "cUnid") == '01') {
+                    // Verifica se tem alguma unidade de medida em KG no array, caso sim, converte toda a carga em KG
+                    $hasKg = true;
+                }
+                if ($this->getTagValue($infQ, "tpMed") == 'PESO BRUTO') {
+                    $qCargaPesoBruto += $this->getTagValue($infQ, "cUnid") == '01' ? 
+                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                } elseif ($this->getTagValue($infQ, "tpMed") == 'PESO BASE DE CALCULO') {
+                    $qCargaPesoBaseCalculo += $this->getTagValue($infQ, "cUnid") == '01' ? 
+                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                } else {
+                    $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                }
+            }
+        }
+
+
+
 
         $wa = $w * 0.2;
         $xa = $x + $wa;
@@ -1623,7 +1658,11 @@ class Dacte extends DaCommon
             'style' => ''
         );
         $this->pdf->textBox($x, $y, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $texto = $qCarga == 0 ? '' : number_format($hasKg ? $qCarga : $qCarga / 1000, 3, ",", ".");
+        $texto = $qCargaPesoBruto > 0 
+            ? number_format($qCargaPesoBruto / ($hasKg ? 1 : 1000), 3, ",", ".") 
+            : ($qCarga > 0 
+            ? number_format($qCarga / ($hasKg ? 1 : 1000), 3, ",", ".") 
+            : '');
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1638,7 +1677,11 @@ class Dacte extends DaCommon
             'style' => ''
         );
         $this->pdf->textBox($xa, $y, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $texto = $qCarga == 0 ? '' : number_format($hasKg ? $qCarga : $qCarga / 1000, 3, ",", ".");
+        $texto = $qCargaPesoBaseCalculo > 0 
+            ? number_format($qCargaPesoBaseCalculo / ($hasKg ? 1 : 1000), 3, ",", ".") 
+            : ($qCarga > 0 
+            ? number_format($qCarga / ($hasKg ? 1 : 1000), 3, ",", ".") 
+            : '');
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,

@@ -454,11 +454,11 @@ class DanfeSimples extends DaCommon
         }
         $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$texto}", 1, 0, 'C', 1);
         $IE = $this->emit->getElementsByTagName("IE");
-        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : '';
+        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : 'Nenhum';
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$texto}",
+            "RG/IE: {$texto}",
             1,
             1,
             'C',
@@ -509,11 +509,11 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(($c1 * 2.2), $pequeno ? 4 : 5, "CNPJ/CPF: {$texto}", 1, 0, 'C', 1);
 
         $IE    = $this->dest->getElementsByTagName("IE");
-        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : '';
+        $texto = ($IE && $IE->length > 0) ? $IE->item(0)->nodeValue : 'Nenhum';
         $this->pdf->cell(
             ($c1 * 1.8),
             $pequeno ? 4 : 5,
-            @"IE: {$texto}",
+            "RG/IE:: {$texto}",
             1,
             1,
             'C',

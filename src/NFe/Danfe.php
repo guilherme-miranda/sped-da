@@ -319,6 +319,13 @@ class Danfe extends DaCommon
      */
     protected $obsshow = true;
 
+    protected $title = '';
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
     /**
      * __construct
      * @param string $xml Conteúdo XML da NF-e (com ou sem a tag nfeProc)
@@ -414,7 +421,7 @@ class Danfe extends DaCommon
                 $this->textoAdic .= $infPedido;
             }
             // EXIBE EMAIL DO DESTINATÁRIO
-            if($this->exibirEmailDestinatario){
+            if ($this->exibirEmailDestinatario) {
                 $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
             }
 
@@ -491,6 +498,7 @@ class Danfe extends DaCommon
         $logo = ''
     ) {
         $this->pdf       = '';
+
         $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
@@ -536,6 +544,7 @@ class Danfe extends DaCommon
         $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
         $this->pdf->open();
+        $this->pdf->setTitle($this->title);
         // adiciona a primeira página
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
@@ -2145,7 +2154,7 @@ class Danfe extends DaCommon
                 '02' => 'Cheque',
                 '03' => 'Cartão de Crédito',
                 '04' => 'Cartão de Débito',
-                '05' => 'Crédito Loja',
+                '05' => 'Cartão da Loja/Outros Crediários',
                 '10' => 'Vale Alimentação',
                 '11' => 'Vale Refeição',
                 '12' => 'Vale Presente',
@@ -2153,9 +2162,12 @@ class Danfe extends DaCommon
                 '14' => 'Duplicata Mercantil',
                 '15' => 'Boleto',
                 '16' => 'Depósito Bancário',
-                '17' => 'Pagamento Instantâneo (PIX)',
-                '18' => 'Transferência Bancária, Carteira Digit.',
-                '19' => 'Fidelidade, Cashback, Crédito Virtual',
+                '17' => 'PIX Dinâmico',
+                '18' => 'Transferência bancária, Carteira Digital',
+                '19' => 'Programa fidelidade, Cashback, Créd Virt',
+                '20' => 'PIX Estático',
+                '21' => 'Crédito em Loja',
+                '22' => 'Pagamento Eletrônico não Informado - Falha de hardware',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
@@ -3035,10 +3047,10 @@ class Danfe extends DaCommon
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
-        $texto = 'O/CST'; // CRT = 2 ou CRT = 3
-        if ($this->getTagValue($this->emit, 'CRT') == '1') {
-            $texto = 'O/CSOSN'; //Regime do Simples CRT = 1
-        }
+        $crt = $this->getTagValue($this->emit, 'CRT');
+        // 1=Simples Nacional; 2=Simples Nacional, excesso sublimite de receita bruta;
+        // 3=Regime Normal; 4=Simples Nacional - Microempreendedor Individual - MEI;
+        $texto = in_array($crt, ['1', '4']) ? 'O/CSOSN' : 'O/CST';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
