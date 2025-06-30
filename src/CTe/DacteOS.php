@@ -1323,7 +1323,7 @@ class DacteOS extends DaCommon
         $x += $w * $wCol02;
 
         $texto = !empty($this->infTribFed->getElementsByTagName("vCSLL")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vCSLL"), 2, ",", ".").'%' : '0,00';
+            number_format($this->getTagValue($this->infTribFed, "vCSLL"), 2, ",", ".") : '0,00';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
 
