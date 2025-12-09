@@ -99,6 +99,10 @@ class Dacte extends DaCommon
     protected $formatPadrao;
     protected $wCanhoto;
     protected $arrayNF;
+    protected $hObservacao = 18.8; // Altura padrão das observações
+    protected $fontSizeObs = 7.5; // Tamanho da fonte das observações
+    protected $docsPrimeiraPagOriginal = 24; // Valor original para reset
+    protected $hDocOrig = 35; // Altura calculada dos documentos originários
 
     /**
      * __construct
@@ -308,6 +312,21 @@ class Dacte extends DaCommon
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
         $this->pdf->setTextColor(0, 0, 0);
+        
+        // Calcula a altura necessária para as observações e ajusta documentos se necessário
+        $this->docsPrimeiraPag = $this->docsPrimeiraPagOriginal; // Reset para valor original
+        $hObsCalculada = $this->calculoAlturaObservacao();
+        $hObsPadrao = 18.8;
+        
+        // Se a altura das observações exceder o padrão, reduzir documentos na primeira página
+        if ($hObsCalculada > $hObsPadrao) {
+            $alturaExtra = $hObsCalculada - $hObsPadrao;
+            // Cada linha de documento ocupa aproximadamente 3.5mm de altura
+            // Cada "documento" ocupa meia linha (2 por linha), então cada doc = ~1.75mm
+            $docsAReduzir = (int) ceil($alturaExtra / 1.75);
+            $this->docsPrimeiraPag = max(4, $this->docsPrimeiraPagOriginal - $docsAReduzir);
+        }
+        
         //calculo do numero de páginas ???
         $totPag = 1;
         //montagem da primeira página
@@ -346,28 +365,21 @@ class Dacte extends DaCommon
             } else {
                 $r = $this->docOrig($x, $y);
             }
-            if ($this->modal == '1') {
-                if ($this->lota == 1) {
-                    //$y += 24.95;
-                    $y += 35;
-                } else {
-                    $y += 50;
-                }
-            } elseif ($this->modal == '2') {
-                $y += 53;
-            } elseif ($this->modal == '3') {
+            // Usar altura dinâmica do docOrig para incrementar $y
+            if ($this->modal == '3') {
                 if (!empty($this->detCont)) {
                     $y += 15;
                 }
             } elseif ($this->modal == '6') {
                 $y += 27.5;
             } else {
-                $y += 24.95;
+                $y += $this->hDocOrig;
             }
             if ($this->modal != 3 && $this->modal != 6) {
                 $x = $xInic;
                 $r = $this->observacao($x, $y);
-                $y = $y - 6;
+                // Ajustar incremento baseado na altura das observações
+                $y = $y - 6 + ($this->hObservacao - 18.8);
             }
             switch ($this->modal) {
                 case '1':
@@ -2460,20 +2472,30 @@ class Dacte extends DaCommon
             $maxW = $this->wPrint - $this->wCanhoto;
         }
         $w = $maxW;
+        
+        // Calcular redução de altura baseado no espaço extra das observações
+        $hObsPadrao = 18.8;
+        $alturaExtraObs = max(0, $this->hObservacao - $hObsPadrao);
+        
         // SE FOR RODOVIARIO ( BTR-SEMPRE SERÁ )
         if ($this->modal == '1') {
             // 0 - Não; 1 - Sim Será lotação quando houver um único conhecimento de transporte por veículo,
             // ou combinação veicular, e por viagem
-            $h = $this->lota == 1 ? 35 : 50;
+            $hBase = $this->lota == 1 ? 35 : 50;
         } elseif ($this->modal == '2') {
-            $h = 53;
+            $hBase = 53;
         } elseif ($this->modal == '3') {
-            $h = 27.6;
+            $hBase = 27.6;
         } elseif ($this->modal == '6') {
-            $h = 27.6;
+            $hBase = 27.6;
         } else {
-            $h = 35;
+            $hBase = 35;
         }
+        
+        // Reduzir altura do docOrig baseado no espaço extra das observações
+        // Altura mínima de 15mm para não comprometer o layout
+        $h = max(15, $hBase - $alturaExtraObs);
+        $this->hDocOrig = $h; // Armazenar altura para uso na função monta()
         $texto = 'DOCUMENTOS ORIGINÁRIOS';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
@@ -2495,17 +2517,8 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.14;
-        if ($this->modal == '1') {
-            $this->pdf->line($x, $y, $x, $oldY + $h);
-        } elseif ($this->modal == '2') {
-            $this->pdf->line($x, $y, $x, $y + 49.5);
-        } elseif ($this->modal == '3') {
-            $this->pdf->line($x, $y, $x, $y + 24);
-        } elseif ($this->modal == '6') {
-            $this->pdf->line($x, $y, $x, $y + 24);
-        } else {
-            $this->pdf->line($x, $y, $x, $y + 21.5);
-        }
+        // Linha vertical divisória - usar altura dinâmica
+        $this->pdf->line($x, $y, $x, $oldY + $h);
         $texto = $descr1;
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
@@ -3029,6 +3042,85 @@ class Dacte extends DaCommon
     }
 
     /**
+     * calculoAlturaObservacao
+     * Calcula a altura necessária para o campo de observações baseado no texto
+     *
+     * @return float Altura calculada para o campo de observações
+     */
+    protected function calculoAlturaObservacao()
+    {
+        // Altura padrão das observações
+        $hPadrao = 18.8;
+        $hMax = 50; // Altura máxima permitida para não comprometer o layout
+        
+        // Monta o texto das observações
+        $texto = '';
+        if ($this->compl) {
+            foreach ($this->compl as $k => $d) {
+                $xObs = $this->getTagValue($this->compl->item($k), "xObs");
+                $texto .= str_replace(";", "\n", $xObs);
+            }
+        }
+        $texto .= $this->getTagValue($this->imp, "infAdFisco", "\r\n");
+        
+        if (empty(trim($texto))) {
+            $this->hObservacao = $hPadrao;
+            $this->fontSizeObs = 7.5;
+            return $hPadrao;
+        }
+        
+        // Largura do campo de observações
+        if ($this->orientacao == 'P') {
+            $maxW = $this->wPrint;
+        } else {
+            $maxW = $this->wPrint - $this->wCanhoto;
+        }
+        $w = $maxW - 2; // Margem interna
+        
+        // Configuração inicial da fonte
+        $fontSize = 7.5;
+        $aFont = array(
+            'font' => $this->fontePadrao,
+            'size' => $fontSize,
+            'style' => ''
+        );
+        
+        // Calcular número de linhas necessárias
+        $numLinhas = $this->pdf->getNumLines($texto, $w, $aFont);
+        $alturaTexto = 3.4; // Espaço do título
+        $alturaTexto += ceil($numLinhas * ($fontSize / 2.5)); // Altura aproximada por linha
+        
+        // Se exceder o máximo, tentar reduzir a fonte
+        if ($alturaTexto > $hMax) {
+            for ($f = 7; $f >= 5; $f -= 0.5) {
+                $aFont['size'] = $f;
+                $numLinhas = $this->pdf->getNumLines($texto, $w, $aFont);
+                $alturaTexto = 3.4 + ceil($numLinhas * ($f / 2.5));
+                
+                if ($alturaTexto <= $hMax) {
+                    $fontSize = $f;
+                    break;
+                }
+            }
+            // Se ainda exceder, usar altura máxima e menor fonte
+            if ($alturaTexto > $hMax) {
+                $alturaTexto = $hMax;
+                $fontSize = 5;
+            }
+        }
+        
+        // Garantir altura mínima
+        if ($alturaTexto < $hPadrao) {
+            $alturaTexto = $hPadrao;
+        }
+        
+        $this->hObservacao = $alturaTexto;
+        $this->fontSizeObs = $fontSize;
+        
+        return $alturaTexto;
+    }
+
+    /**
      * observacao
      * Monta o campo com os dados do remetente na DACTE.
      *
@@ -3046,8 +3138,8 @@ class Dacte extends DaCommon
             $maxW = $this->wPrint - $this->wCanhoto;
         }
         $w = $maxW;
-        //$h = 18;
-        $h = 18.8;
+        // Usar altura dinâmica calculada
+        $h = $this->hObservacao;
         $texto = 'OBSERVAÇÕES GERAIS';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
@@ -3060,12 +3152,11 @@ class Dacte extends DaCommon
             $xObs = $this->getTagValue($this->compl->item($k), "xObs");
             $texto .= str_replace(";", "\n", $xObs);
         }
-        //$textoObs = explode("Motorista:", $texto);
-        //$textoObs[1] = isset($textoObs[1]) ? "Motorista: " . $textoObs[1] : '';
         $texto .= $this->getTagValue($this->imp, "infAdFisco", "\r\n");
+        // Usar tamanho de fonte dinâmico
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 7.5,
+            'size' => $this->fontSizeObs,
             'style' => ''
         );
         $this->pdf->textBox($x, $y, $w, $h - 3.4, $texto, $aFont, 'T', 'L', 0, '', false);
