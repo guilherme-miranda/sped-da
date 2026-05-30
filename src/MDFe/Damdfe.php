@@ -966,7 +966,7 @@ class Damdfe extends DaCommon
             $valesPedagios = 1;
             $temVales = false;
             if ($this->valePed != "" && $this->valePed->length > 0) {
-                $valesPedagios = $this->valePed->length;
+                $valesPedagios = min($this->valePed->length, 2);
                 $temVales = true;
             }
             $tamanho = ($valesPedagios * 7.5);
@@ -1021,6 +1021,38 @@ class Damdfe extends DaCommon
             if (!$temVales) {
                 $altura += 4;
             }
+
+            // ===== CIOT =====
+            $infCiotList = $this->rodo ? $this->rodo->getElementsByTagName('infCIOT') : null;
+            if ($infCiotList && $infCiotList->length > 0) {
+                $x1 = $x;
+                $x2 = round($maxW / 2, 0);
+                $yCiot = $yCabecalhoLinha + 32;
+                $texto = 'CIOT';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+                $this->pdf->textBox($x1, $yCiot, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $yCiot += 7;
+                $colNum = round($x2 * 0.45, 0);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
+                $this->pdf->textBox($x1, $yCiot, $colNum, 8, 'Nº', $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->textBox($x1 + $colNum, $yCiot, $x2 - $colNum, 8, 'Responsável', $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->line($x1, $yCiot + 4, $x1 + 94, $yCiot + 4);
+                $altura = $yCiot;
+                for ($i = 0; $i < $infCiotList->length; $i++) {
+                    $altura += 4;
+                    $ciotNode = $infCiotList->item($i)->getElementsByTagName('CIOT');
+                    $respNode = $infCiotList->item($i)->getElementsByTagName('CNPJ');
+                    if ($respNode->length == 0) {
+                        $respNode = $infCiotList->item($i)->getElementsByTagName('CPF');
+                    }
+                    $ciotTxt = $ciotNode->length ? $ciotNode->item(0)->nodeValue : '';
+                    $respTxt = $respNode->length ? $respNode->item(0)->nodeValue : '';
+                    $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                    $this->pdf->textBox($x1, $altura, $colNum - 1, 10, $ciotTxt, $aFont, 'T', 'L', 0, '', false);
+                    $this->pdf->textBox($x1 + $colNum, $altura, $x2 - $colNum, 10, $respTxt, $aFont, 'T', 'L', 0, '', false);
+                }
+            }
+
             $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
             $x1 = round($maxW / 2, 0) + 7;
             $y = $yold;
