@@ -418,7 +418,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->ln();
         $texto = $this->formatField(
             $chave,
-            "#### #### #### #### #### #### #### #### ####"
+            "#### #### #### #### #### #### #### #### #### #### ####"
         );
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, $texto, 0, 1, 'C', 1);
