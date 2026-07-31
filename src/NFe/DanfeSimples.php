@@ -293,8 +293,11 @@ class DanfeSimples extends DaCommon
         // }
 
         foreach ($this->transp->getElementsByTagName('vol') as $vol) {
-            $espVolume = !empty($this->transp->getElementsByTagName("esp")->item(0)->nodeValue) ?
-                $this->transp->getElementsByTagName("esp")->item(0)->nodeValue : 'VOLUME';
+            //a especie precisa vir do <vol> da iteracao: lendo de $this->transp
+            //pega sempre o primeiro <esp> do XML e todos os volumes acabam
+            //agrupados sob a especie do primeiro
+            $espVolume = !empty($vol->getElementsByTagName("esp")->item(0)->nodeValue) ?
+                $vol->getElementsByTagName("esp")->item(0)->nodeValue : 'VOLUME';
 
             //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
 

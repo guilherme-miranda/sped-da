@@ -840,34 +840,34 @@ class DacteOS extends DaCommon
         //#########################################################################
         //Indicação de CTe Homologação, cancelamento e falta de protocolo
         $resp = $this->statusCTe();
-        // if (!$resp['status']) {
-        //     $n = count($resp['message']);
-        //     $alttot = $n * 15;
-        //     $x = $oldX;
-        //     $y = $this->hPrint/2 - $alttot/2;
-        //     $h = 15;
-        //     $w = $maxW;
-        //     $this->pdf->settextcolor(90, 90, 90);
-        //     foreach ($resp['message'] as $msg) {
-        //         $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-        //         $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
-        //         $y += $h;
-        //     }
-        //     $texto = $resp['submessage'];
-        //     if (!empty($texto)) {
-        //         $y += 3;
-        //         $h = 5;
-        //         $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
-        //         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-        //         $y += $h;
-        //     }
-        //     $y += 5;
-        //     $w = $maxW;
-        //     $texto = "SEM VALOR FISCAL";
-        //     $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-        //     $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-        //     $this->pdf->settextcolor(0, 0, 0);
-        // }
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
+            $x = $oldX;
+            $y = $this->hPrint/2 - $alttot/2;
+            $h = 15;
+            $w = $maxW;
+            $this->pdf->settextcolor(90, 90, 90);
+            foreach ($resp['message'] as $msg) {
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h;
+            }
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $y += $h;
+            }
+            $y += 5;
+            $w = $maxW;
+            $texto = "SEM VALOR FISCAL";
+            $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->settextcolor(0, 0, 0);
+        }
         return $oldY;
     }
 

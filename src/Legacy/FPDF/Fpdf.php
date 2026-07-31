@@ -754,7 +754,8 @@ class Fpdf
                 //remover espaços desnecessários
                 $txt = trim($txt);
                 //converter o charset para o fpdf
-                $txt = utf8_decode($txt);
+                //utf8_decode() faz o mesmo, mas está deprecated desde o PHP 8.2
+                $txt = mb_convert_encoding($txt, 'ISO-8859-1', 'UTF-8');
                 //decodifica os caracteres html no xml
                 $txt = html_entity_decode($txt);
             } else {
