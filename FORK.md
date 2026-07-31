@@ -366,7 +366,7 @@ alguém precisar.
 | Teste de regressão dos veículos novos | não existe — hoje só há validação manual |
 | PR #647 (flag de FCP) | tornaria a customização do FCP desnecessária |
 | PR #649 (IBS/CBS, Reforma Tributária) | obrigatório em produção desde 03/08/2026; o PR embute paginação hardcoded que conflita com a nossa |
-| PR #609 (sobreposição de itens) | pode afetar o fork; não investigado |
+| PR #609 (sobreposição de itens) | **não afeta o fork** — verificado em 14 combinações de duplicata × pagamento × itens, nenhuma perde item. O PR troca o `elseif` por `if` para imprimir fatura **e** pagamentos juntos; aqui o `elseif` foi mantido, então só um dos dois é impresso e o cálculo de altura bate. Só adotar se quiserem exibir os dois blocos |
 | Issue #568 (timeout com muitas tags `RASTRO`) | não investigado |
 | `infAdFisco` não é impresso no CT-e OS | `DacteOS.php:1552` concatena num `$texto` já consumido pelo `explode()` acima |
 | Telefone não geográfico (0800 etc.) | máscara do `Danfe.php` não trata |
