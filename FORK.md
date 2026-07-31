@@ -372,7 +372,6 @@ alguém precisar.
 | Issue #568 (timeout com muitas tags `RASTRO`) | não investigado |
 | `infAdFisco` não é impresso no CT-e OS | `DacteOS.php:1552` concatena num `$texto` já consumido pelo `explode()` acima |
 | Telefone não geográfico (0800 etc.) | máscara do `Danfe.php` não trata |
-| **URL de consulta do MDF-e desatualizada** | `Damdfe.php:915` imprime `dfe-portal.sefazvirtual.rs.gov.br`; o upstream corrigiu para `dfe-portal.svrs.rs.gov.br` em 2023 e a correção nunca chegou aqui. É o endereço que o destinatário usa para consultar — vale conferir se o antigo ainda responde |
 | `$this->infCIOT` órfã | `Damdfe.php:74,185-187` — preenchida e nunca lida (§6) |
 | Paginação do CT-e é assimétrica | `infOutros` e `infCTeMultimodal` entram na contagem de `$qtdDocs` mas nunca são truncados nem reimpressos na continuação; só `arrayNFe`, `infNF` e `idDocAntEle` têm a proteção completa |
 | Espécie de volume no `DanfeSimples` | lida de `$this->transp` em vez do `$vol` da iteração — com múltiplos `<vol>` de espécies diferentes, todos saem com a espécie do primeiro |
