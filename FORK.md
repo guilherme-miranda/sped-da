@@ -94,9 +94,6 @@ merge que traga a linha do upstream reverte o comportamento sem gerar conflito.
 ### CT-e OS (`src/CTe/DacteOS.php`)
 
 - Correção do **CSLL** — havia um `%` indevido num valor monetário.
-- ⚠️ **Watermark de status desativado** (bloco comentado): a DACTE OS **não sinaliza
-  mais** visualmente CT-e cancelado, denegado ou sem protocolo. Foi decisão do fork,
-  mas vale reavaliar — é informação fiscal relevante para quem recebe o documento.
 - `getTagValue($this->infCteComp, "chCTe")` — o upstream lia a tag `"chave"`, que não
   existe no schema, então a referência vinha sempre vazia.
 - Suporte a **CT-e Substituto** (`tpCTe == 3`) e cabeçalho impresso nos dois ramos.
@@ -157,9 +154,10 @@ Outras correções aqui: máscara da chave de acesso com 11 grupos (era 9, e os 
 
 ### `src/Legacy/FPDF/Fpdf.php`
 
-- `cell()` passa todo texto por `trim()` + `utf8_decode()` + `html_entity_decode()`
-  antes de medir e desenhar. O upstream usa o texto cru. Afeta **todos** os
-  documentos, já que é a base de renderização.
+- `cell()` passa todo texto por `trim()` + `mb_convert_encoding()` +
+  `html_entity_decode()` antes de medir e desenhar. O upstream usa o texto cru.
+  Afeta **todos** os documentos, já que é a base de renderização.
+  (Era `utf8_decode()`, deprecated no PHP 8.2 e removido no 9.)
 
 ### Eventos (`Daevento` de NFe, CTe e MDFe)
 
@@ -374,4 +372,3 @@ alguém precisar.
 | Telefone não geográfico (0800 etc.) | máscara do `Danfe.php` não trata |
 | `$this->infCIOT` órfã | `Damdfe.php:74,185-187` — preenchida e nunca lida (§6) |
 | Paginação do CT-e é assimétrica | `infOutros` e `infCTeMultimodal` entram na contagem de `$qtdDocs` mas nunca são truncados nem reimpressos na continuação; só `arrayNFe`, `infNF` e `idDocAntEle` têm a proteção completa |
-| Espécie de volume no `DanfeSimples` | lida de `$this->transp` em vez do `$vol` da iteração — com múltiplos `<vol>` de espécies diferentes, todos saem com a espécie do primeiro |
