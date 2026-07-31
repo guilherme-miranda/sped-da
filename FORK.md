@@ -365,7 +365,7 @@ alguém precisar.
 | Upstream tem 2 commits novos (PR #667) | tocam só `Danfse.php`, que não usamos |
 | Teste de regressão dos veículos novos | não existe — hoje só há validação manual |
 | PR #647 (flag de FCP) | tornaria a customização do FCP desnecessária |
-| PR #649 (IBS/CBS, Reforma Tributária) | obrigatório em produção desde 03/08/2026; o PR embute paginação hardcoded que conflita com a nossa |
+| PR #649 (IBS/CBS, Reforma Tributária) | **aguardar**. A obrigatoriedade de 03/08/2026 é do **XML**, não do DANFE — a rejeição da SEFAZ ocorre na autorização. A Receita ainda não publicou o layout do DANFE com IBS/CBS (documentos auxiliares "em estudo"); só a NFS-e ganhou o seu, pela NT 008/2026, que já veio no merge. Os rótulos e a posição do PR são invenção do autor e provavelmente não baterão com a norma. Além disso ele embute um limite fixo de 7 itens por página, que quebraria nossa paginação |
 | PR #609 (sobreposição de itens) | **não afeta o fork** — verificado em 14 combinações de duplicata × pagamento × itens, nenhuma perde item. O PR troca o `elseif` por `if` para imprimir fatura **e** pagamentos juntos; aqui o `elseif` foi mantido, então só um dos dois é impresso e o cálculo de altura bate. Só adotar se quiserem exibir os dois blocos |
 | Issue #568 (timeout com muitas tags `RASTRO`) | não investigado |
 | `infAdFisco` não é impresso no CT-e OS | `DacteOS.php:1552` concatena num `$texto` já consumido pelo `explode()` acima |
