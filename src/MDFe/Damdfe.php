@@ -1484,14 +1484,29 @@ class Damdfe extends DaCommon
             $y = 180;
         }
         //$this->pdf->textBox($x, $y, $x2, $h, '', $this->baseFont, 'T', 'L', 1);
-        $texto = 'Observações
-        ' . $this->infCpl;
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $this->pdf->textBox($x, $y, $x2, 8, 'Observações', $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->line($x, $y + 4, $x2 + 5, $y + 4);
+        $texto = $this->infCpl;
         if (!empty($this->infAdFisco)) {
             $texto .= "\n" . $this->infAdFisco;
         }
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pdf->textBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $this->pdf->line($x, $y + 4, $x2 + 5, $y + 4);
+        //a altura do bloco e fixa ($h): quando a observacao e longa, so a fonte
+        //diminui, senao o texto passa do rodape e sai da pagina
+        $hObs = $h - 5;
+        $sizeObs = 8;
+        foreach (array(8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4) as $f) {
+            $sizeObs = $f;
+            $aFontObs = array('font' => $this->fontePadrao, 'size' => $f, 'style' => '');
+            $this->pdf->setFont($this->fontePadrao, '', $f);
+            if (ceil($this->pdf->getNumLines($texto, $x2, $aFontObs) * $this->pdf->fontSize) <= $hObs) {
+                break;
+            }
+        }
+        $aFontObs = array('font' => $this->fontePadrao, 'size' => $sizeObs, 'style' => '');
+        //o conteudo comeca abaixo da linha divisoria, senao a primeira linha do
+        //texto fica cortada por ela
+        $this->pdf->textBox($x, $y + 5, $x2, 8, $texto, $aFontObs, 'T', 'L', 0, '', false);
 
         //$y = $this->hPrint - 4;
         $y = $this->hPrint + 8;

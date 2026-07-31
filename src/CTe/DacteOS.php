@@ -1550,13 +1550,32 @@ class DacteOS extends DaCommon
         $textoObs = explode("Motorista:", $texto);
         $textoObs[1] = isset($textoObs[1]) ? "Motorista: " . $textoObs[1] : '';
         $texto .= $this->getTagValue($this->imp, "infAdFisco", "\r\n");
+        //reduz a fonte quando a observacao e longa, senao o texto invade os blocos
+        //de baixo. mesmo criterio do Dacte, em calculoAlturaObservacao()
+        $hDispObs = $h - 3.4;
+        $sizeObs = 7.5;
+        $linhasObs0 = 0;
+        foreach ([7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4] as $f) {
+            $sizeObs = $f;
+            $aFontObs = array('font' => $this->fontePadrao, 'size' => $f, 'style' => '');
+            $this->pdf->setFont($this->fontePadrao, '', $f);
+            $linhasObs0 = $this->pdf->getNumLines($textoObs[0], $w, $aFontObs);
+            $linhasObs = $linhasObs0
+                + ($textoObs[1] != '' ? $this->pdf->getNumLines($textoObs[1], $w, $aFontObs) : 0);
+            if (ceil($linhasObs * $this->pdf->fontSize) <= $hDispObs) {
+                break;
+            }
+        }
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 7.5,
+            'size' => $sizeObs,
             'style' => ''
         );
+        //mantem o deslocamento historico de 11.5 quando o texto e curto e desce o
+        //bloco do motorista quando as observacoes ocupam mais espaco
+        $yMotorista = max(11.5, ceil($linhasObs0 * $this->pdf->fontSize) + 1);
         $this->pdf->textBox($x, $y, $w, $h, $textoObs[0], $aFont, 'T', 'L', 0, '', false);
-        $this->pdf->textBox($x, $y + 11.5, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y + $yMotorista, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
     }
 
     /**

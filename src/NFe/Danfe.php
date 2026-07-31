@@ -483,6 +483,25 @@ class Danfe extends DaCommon
                 }
             }
         }
+        //o infAdFisco passou a ser impresso na caixa RESERVADO AO FISCO e nao entra
+        //mais no textoAdic, entao precisa ser medido a parte: senao, com infCpl curto
+        //e infAdFisco longo, a caixa fica baixa demais e o texto do fisco vaza
+        $infFisco = $this->getTagValue($this->infNFe, 'infAdFisco', '');
+        if (!empty($infFisco)) {
+            $wFisco = $this->wPrint - $this->wAdic - 2;
+            $hfisco = 0;
+            for ($f = 7; $f > 3; $f--) {
+                $this->pdf->setFont($this->fontePadrao, '', $f);
+                $aFontFisco = ['font' => $this->fontePadrao, 'size' => $f, 'style' => ''];
+                $hfisco = ceil($this->pdf->getNumLines($infFisco, $wFisco, $aFontFisco) * $this->pdf->fontSize);
+                if ($hfisco <= 90) {
+                    break;
+                }
+            }
+            if ($hfisco > $hdadosadic) {
+                $hdadosadic = $hfisco;
+            }
+        }
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
@@ -3808,13 +3827,26 @@ class Danfe extends DaCommon
                 break;
         }
         $y     += 2;
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         $inf = $this->getTagValue($this->infNFe, 'infAdFisco', '');
         if (!empty($texto)) {
             $texto = $texto . "\n" . $inf;
         } elseif (!empty($inf)) {
             $texto = $inf;
         }
+        //reduz a fonte quando o texto do fisco e longo, senao transborda a caixa.
+        //mesmo criterio do campo de informacoes complementares, em
+        //calculaAlturaDadosAdicionais(), mas medido na largura desta coluna
+        $fisFontSize = 7;
+        for ($f = 7; $f > 3; $f--) {
+            $this->pdf->setFont($this->fontePadrao, '', $f);
+            $aFont = ['font' => $this->fontePadrao, 'size' => $f, 'style' => ''];
+            $numlinhasfisco = $this->pdf->getNumLines($texto, $w - 2, $aFont);
+            $fisFontSize = $f;
+            if (ceil($numlinhasfisco * $this->pdf->fontSize) <= $h - 4) {
+                break;
+            }
+        }
+        $aFont = ['font' => $this->fontePadrao, 'size' => $fisFontSize, 'style' => ''];
         $this->pdf->textBox($x, $y, $w - 2, $h, $texto, $aFont, 'T', 'L', 0, '', false);
 
         return $y + $h;
