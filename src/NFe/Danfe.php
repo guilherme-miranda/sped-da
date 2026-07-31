@@ -688,16 +688,18 @@ class Danfe extends DaCommon
                 && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
             );
             $hUsado += $this->calculeHeight($itemProd, $mostrarUnidadeTributavel);
-            // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
-            // Verifica se a Tag existe
-            if (!empty($veicProd)) {
-                $hUsado += 22;
-            }
             if ($hUsado > $hDispo) {
                 $totPag++;
                 $hDispo = $hDispo2;
                 $hUsado = $hCabecItens;
                 //$i--; // decrementa para readicionar o item que não coube nessa pagina na outra.
+            }
+            // Bloco de veiculo novo (0km). Precisa somar a mesma altura usada em
+            // itens() e na mesma ordem: la o acrescimo tambem vem depois da quebra
+            // de pagina, entao ele so pesa no item seguinte. Somar antes faz a
+            // contagem quebrar cedo demais e gerar uma pagina repetida no fim.
+            if (!empty($veicProd)) {
+                $hUsado += 55;
             }
             $i++;
         } //fim da soma das areas de itens usadas
