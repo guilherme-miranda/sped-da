@@ -112,6 +112,12 @@ class Common
      */
     public function toTimestamp($input)
     {
+        //campos de data opcionais chegam como null quando a tag nao existe no XML
+        //(ex.: MDF-e sem evento). A partir do PHP 8.1 passar null para preg_match
+        //emite deprecation, e no PHP 9 vira erro
+        if (!is_string($input) || $input === '') {
+            return 0;
+        }
         $regex = '^(2[0-9][0-9][0-9])[-](0?[1-9]'
             . '|1[0-2])[-](0?[1-9]'
             . '|[12][0-9]'
