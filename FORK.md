@@ -100,7 +100,7 @@ merge que traga a linha do upstream reverte o comportamento sem gerar conflito.
 - `getTagValue($this->infCteComp, "chCTe")` — o upstream lia a tag `"chave"`, que não
   existe no schema, então a referência vinha sempre vazia.
 - Suporte a **CT-e Substituto** (`tpCTe == 3`) e cabeçalho impresso nos dois ramos.
-- Watermark "SEM VALOR FISCAL" **desativado** (bloco comentado).
+- Rodapé esvaziado (o "Impresso em ..." virou string vazia).
 - **Fonte dinâmica nas observações** (7.5 → 4), com o bloco "Motorista:" reposicionado
   por `max(11.5, altura real do texto)`.
 
