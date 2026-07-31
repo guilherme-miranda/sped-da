@@ -4,7 +4,6 @@ namespace NFePHP\DA\Legacy;
 
 class Common
 {
-
     /**
      * Extrai o valor do node DOM
      * @param  object $theObj Instancia de DOMDocument ou DOMElement
@@ -53,9 +52,17 @@ class Common
     }
 
     /**
-     * camcula digito de controle modulo 11
+     * Calcula o digito de controle modulo 11 da chave adicional de contingencia.
+     *
+     * Nao confundir com NFePHP\Common\Keys::verifyingDigit(), que serve para a chave
+     * de acesso e so aceita exatamente 43 caracteres. A chave de contingencia tem 35
+     * caracteres, entao precisa deste calculo proprio.
+     *
+     * Usa ord() - 48 no lugar de (int) para suportar o CNPJ alfanumerico, seguindo o
+     * mesmo criterio adotado pela SEFAZ na chave de acesso.
+     *
      * @param  string $numero
-     * @return integer modulo11 do numero passado
+     * @return string modulo11 do numero passado
      */
     protected function modulo11($numero = '')
     {
@@ -67,16 +74,15 @@ class Common
         $soma = 0;
         $mult = 2;
         for ($i = $tamanho - 1; $i >= 0; $i--) {
-            $digito = (int) $numero[$i];
-            $r = $digito * $mult;
-            $soma += $r;
+            $digito = ord($numero[$i]) - 48;
+            $soma += $digito * $mult;
             $mult++;
             if ($mult == 10) {
                 $mult = 2;
             }
         }
         $resto = ($soma * 10) % 11;
-        return ($resto == 10 || $resto == 0) ? 1 : $resto;
+        return (string) (($resto == 10 || $resto == 0) ? 1 : $resto);
     }
 
     /**
@@ -123,14 +129,39 @@ class Common
      *
      * @param string $input
      *
-     * @return \DateTime
+     * @return \DateTime|false
      */
     public function toDateTime($input)
     {
+        //new \DateTime('') devolve a data/hora atual, o que faria campos opcionais
+        //(ex. HORA DA SAIDA/ENTRADA da DANFE) exibirem o momento da impressao
+        if (!is_string($input) || trim($input) === '') {
+            return false;
+        }
+        if (PHP_MAJOR_VERSION > 7) {
+            try {
+                return new \DateTime($input);
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $this->toDateTimeLegacy($input);
+    }
+
+    private function toDateTimeLegacy($input)
+    {
+        $quantidadeColons = substr_count($input, ':');
+
+        $format = "Y-m-d\TH:i:sP";
+        if ($quantidadeColons == 2) {
+            $format = "Y-m-d\TH:i:s";
+        }
+
         try {
-            return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input);
+            return \DateTime::createFromFormat($format, $input);
         } catch (\Exception $e) {
-            return null;
+            return false;
         }
     }
 
@@ -238,7 +269,7 @@ class Common
                 $tPagNome = 'Cartão de Débito';
                 break;
             case '05':
-                $tPagNome = 'Cartão da Loja';
+                $tPagNome = 'Cartão da Loja/Outros Crediários';
                 break;
             case '10':
                 $tPagNome = 'Vale Alimentação';

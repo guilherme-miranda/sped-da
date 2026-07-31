@@ -4,6 +4,7 @@ namespace NFePHP\DA\NFe;
 
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
+use NFePHP\Common\Keys;
 use \NFePHP\DA\Common\DaCommon;
 
 class Danfe extends DaCommon
@@ -321,6 +322,9 @@ class Danfe extends DaCommon
 
     protected $title = '';
 
+    //padrao do fork: linha solida entre as colunas dos itens
+    protected bool $usarLinhaTracejadaSeparacaoItens = false;
+
     public function setTitle($title)
     {
         $this->title = $title;
@@ -424,10 +428,10 @@ class Danfe extends DaCommon
             if ($this->exibirEmailDestinatario) {
                 $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
             }
-
+            /*
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
-                : '';
+                : ''; */
             if ($this->obsshow) {
                 $obsCont = $this->infAdic->getElementsByTagName("obsCont");
                 if (isset($obsCont)) {
@@ -492,7 +496,7 @@ class Danfe extends DaCommon
      * A definição de margens e posições iniciais para a impressão são estabelecidas
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
+     * @return string O ID da NFe de 44 caracteres extraído do arquivo XML
      */
     protected function monta(
         $logo = ''
@@ -1188,7 +1192,7 @@ class Danfe extends DaCommon
         $h  = 32;
         $this->pdf->textBox($x, $y, $w, $h);
         $this->pdf->setFillColor(0, 0, 0);
-        $chave_acesso = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
+        $chave_acesso = Keys::extractAccessKey($this->infNFe->getAttribute("Id"));
         $bW           = 75;
         $bH           = 12;
         //codigo de barras
@@ -1333,7 +1337,7 @@ class Danfe extends DaCommon
         if (!empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue)
@@ -1450,7 +1454,7 @@ class Danfe extends DaCommon
         if (!empty($this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->dest->getElementsByTagName("CPF")->item(0)->nodeValue)
@@ -1667,7 +1671,7 @@ class Danfe extends DaCommon
         if (!empty($this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->entrega->getElementsByTagName("CPF")->item(0)->nodeValue) ?
@@ -1820,7 +1824,7 @@ class Danfe extends DaCommon
         if (!empty($this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->retirada->getElementsByTagName("CPF")->item(0)->nodeValue) ?
@@ -3025,25 +3029,33 @@ class Danfe extends DaCommon
         $h     = 4;
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w1, $y, $x + $w1, $y + $hmax);
 
+        //$this->pdf->line($x + $w1, $y, $x + $w1, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w1, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w1, $y, 0.1, $y + $hmax, 100);
+
         //DESCRIÇÃO DO PRODUTO / SERVIÇO
         $x     += $w1;
         $w2    = round($w * 0.25, 0);
         $texto = 'DESCRIÇÃO DO PRODUTO / SERVIÇO';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w2, $y, $x + $w2, $y + $hmax);
+
+        //$this->pdf->line($x + $w2, $y, $x + $w2, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w2, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w2, $y, 0.1, $y + $hmax, 100);
+
         //NCM/SH
         $x     += $w2;
         $w3    = round($w * 0.06, 0);
         $texto = 'NCM/SH';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w3, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w3, $y, $x + $w3, $y + $hmax);
+
+        //$this->pdf->line($x + $w3, $y, $x + $w3, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w3, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w3, $y, 0.1, $y + $hmax, 100);
+
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
@@ -3053,88 +3065,121 @@ class Danfe extends DaCommon
         $texto = in_array($crt, ['1', '4']) ? 'O/CSOSN' : 'O/CST';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
+
+        //$this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w4, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w4, $y, 0.1, $y + $hmax, 100);
+
         //CFOP
         $x     += $w4;
         $w5    = round($w * 0.035, 0);
         $texto = 'CFOP';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w5, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w5, $y, $x + $w5, $y + $hmax);
+
+        //$this->pdf->line($x + $w5, $y, $x + $w5, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w5, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w5, $y, 0.1, $y + $hmax, 100);
+
         //UN
         $x     += $w5;
         $w6    = round($w * 0.03, 0);
         $texto = 'UN';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w6, $y, $x + $w6, $y + $hmax);
+
+        //$this->pdf->line($x + $w6, $y, $x + $w6, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w6, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w6, $y, 0.1, $y + $hmax, 100);
+
         //QUANT
         $x     += $w6;
         $w7    = round($w * 0.08, 0);
         $texto = 'QUANT';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w7, $y, $x + $w7, $y + $hmax);
+
+        //$this->pdf->line($x + $w7, $y, $x + $w7, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w7, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w7, $y, 0.1, $y + $hmax, 100);
+
         //VALOR UNIT
         $x     += $w7;
         $w8    = round($w * 0.06, 0);
         $texto = 'VALOR UNIT';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w8, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w8, $y, $x + $w8, $y + $hmax);
+
+        //$this->pdf->line($x + $w8, $y, $x + $w8, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w8, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w8, $y, 0.1, $y + $hmax, 100);
+
         //VALOR TOTAL
         $x     += $w8;
         $w9    = round($w * 0.06, 0);
         $texto = 'VALOR TOTAL';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w9, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w9, $y, $x + $w9, $y + $hmax);
+
+        //$this->pdf->line($x + $w9, $y, $x + $w9, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w9, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w9, $y, 0.1, $y + $hmax, 100);
+
         //VALOR DESCONTO
         $x     += $w9;
         $w10   = round($w * 0.05, 0);
         $texto = 'VALOR DESC';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w10, $y, $x + $w10, $y + $hmax);
+
+        //$this->pdf->line($x + $w10, $y, $x + $w10, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w10, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w10, $y, 0.1, $y + $hmax, 100);
+
         //B.CÁLC ICMS
         $x     += $w10;
         $w11   = round($w * 0.06, 0);
         $texto = 'B.CÁLC ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w11, $y, $x + $w11, $y + $hmax);
+
+        //$this->pdf->line($x + $w11, $y, $x + $w11, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w11, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w11, $y, 0.1, $y + $hmax, 100);
+
         //VALOR ICMS
         $x     += $w11;
         $w12   = round($w * 0.06, 0);
         $texto = 'VALOR ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w12, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w12, $y, $x + $w12, $y + $hmax);
+
+        //$this->pdf->line($x + $w12, $y, $x + $w12, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w12, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w12, $y, 0.1, $y + $hmax, 100);
+
         //VALOR IPI
         $x     += $w12;
         $w13   = round($w * 0.05, 0);
         $texto = 'VALOR IPI';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w13, $y, $x + $w13, $y + $hmax);
+
+        //$this->pdf->line($x + $w13, $y, $x + $w13, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w13, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w13, $y, 0.1, $y + $hmax, 100);
+
         //ALÍQ. ICMS
         $x     += $w13;
         $w14   = round($w * 0.035, 0);
         $texto = 'ALÍQ. ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w14, $y, $x + $w14, $y + $hmax);
+
+        //$this->pdf->line($x + $w14, $y, $x + $w14, $y + $hmax);
         //$this->pdf->dashedVLine($x + $w14, $y, 0.1, $y + $hmax, 100);
+        $this->desenharLinhaColunaItens($x + $w14, $y, 0.1, $y + $hmax, 100);
+
         //ALÍQ. IPI
         $x     += $w14;
         $w15   = $w - ($w1 + $w2 + $w3 + $w4 + $w5 + $w6 + $w7 + $w8 + $w9 + $w10 + $w11 + $w12 + $w13 + $w14);
@@ -3764,6 +3809,12 @@ class Danfe extends DaCommon
         }
         $y     += 2;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $inf = $this->getTagValue($this->infNFe, 'infAdFisco', '');
+        if (!empty($texto)) {
+            $texto = $texto . "\n" . $inf;
+        } elseif (!empty($inf)) {
+            $texto = $inf;
+        }
         $this->pdf->textBox($x, $y, $w - 2, $h, $texto, $aFont, 'T', 'L', 0, '', false);
 
         return $y + $h;
@@ -4165,5 +4216,20 @@ class Danfe extends DaCommon
             $numlinhas++;
         }
         return round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
+    }
+
+    public function setUsarLinhaTracejadaSeparacaoItens(bool $usarLinhaTracejadaSeparacaoItens): void
+    {
+        $this->usarLinhaTracejadaSeparacaoItens = $usarLinhaTracejadaSeparacaoItens;
+    }
+
+    private function desenharLinhaColunaItens($x, $y, $w, $yfinal, $n)
+    {
+        if ($this->usarLinhaTracejadaSeparacaoItens) {
+            $this->pdf->dashedVLine($x, $y, $w, $yfinal, $n);
+            return;
+        }
+
+        $this->pdf->line($x, $y, $x, $yfinal);
     }
 }

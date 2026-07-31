@@ -19,6 +19,7 @@ use Com\Tecnick\Barcode\Barcode;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
+use NFePHP\Common\Keys;
 use NFePHP\DA\Common\DaCommon;
 
 class Dacte extends DaCommon
@@ -237,7 +238,7 @@ class Dacte extends DaCommon
      *                impressão (ex. P-retrato), se nada for fornecido será
      *                usado o padrão da NFe
      * @param string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
-     * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
+     * @return string O ID da NFe de 44 caracteres extraído do arquivo XML
      */
     protected function monta(
         $logo = ''
@@ -868,7 +869,7 @@ class Dacte extends DaCommon
         $h1 = 14;
         $this->pdf->textBox($x, $y, $w, $h1);
         //CODIGO DE BARRAS
-        $chave_acesso = str_replace('CTe', '', $this->infCte->getAttribute("Id"));
+        $chave_acesso = Keys::extractAccessKey($this->infCte->getAttribute("Id"));
         $bW = 85;
         $bH = 10;
         //codigo de barras
@@ -1746,9 +1747,13 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($xa, $y, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $qCarga = 0;
+        $qCargaMMBTU = 0;
         foreach ($this->infQ as $infQ) {
             if ($this->getTagValue($infQ, "cUnid") == '03') {
                 $qCarga += (float)$this->getTagValue($infQ, "qCarga");
+            }
+            if ($this->getTagValue($infQ, "cUnid") == '05') {
+                $qCargaMMBTU += (float)$this->getTagValue($infQ, "qCarga");
             }
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
@@ -1758,6 +1763,17 @@ class Dacte extends DaCommon
             'style' => 'B'
         );
         $this->pdf->textBox($xa, $y + 3, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
+        //unidade de medida 05 - MMBTU, exibida na linha inferior da mesma coluna
+        //os litros (cUnid 04) possuem coluna propria QTDE(LTS)
+        if (!empty($qCargaMMBTU)) {
+            $texto = 'MMBTU: ' . number_format($qCargaMMBTU, 3, ",", ".");
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 6,
+                'style' => 'B'
+            );
+            $this->pdf->textBox($xa, $y + 6, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
+        }
         $this->pdf->line($xa, $y, $xa, $y + 9);
         /*$texto = 'NOME DA SEGURADORA';
         $aFont = $this->formatPadrao;
@@ -4010,10 +4026,10 @@ class Dacte extends DaCommon
         $cnpj = !empty($field->getElementsByTagName("CNPJ")->item(0)->nodeValue) ?
             $field->getElementsByTagName("CNPJ")->item(0)->nodeValue : "";
         if ($cnpj != "" && $cnpj != "00000000000000") {
-            $cnpj = $this->formatField($cnpj, '###.###.###/####-##');
+            $cnpj = $this->formatField($cnpj, '##.###.###/####-##');
         } else {
             $cnpj = !empty($field->getElementsByTagName("CPF")->item(0)->nodeValue) ?
-                $this->formatField($field->getElementsByTagName("CPF")->item(0)->nodeValue, '###.###.###.###-##') : '';
+                $this->formatField($field->getElementsByTagName("CPF")->item(0)->nodeValue, '###.###.###-##') : '';
         }
         return $cnpj;
     }

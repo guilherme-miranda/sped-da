@@ -83,7 +83,7 @@ class Daevento extends DaCommon
             $this->errStatus = true;
             return false;
         }
-        $this->id = str_replace('ID', '', $this->infEvento->getAttribute("Id"));
+        $this->id = preg_replace('/^ID/', '', $this->infEvento->getAttribute("Id"));
         $this->chMDFe = $this->infEvento->getElementsByTagName("chMDFe")->item(0)->nodeValue;
         $this->dadosEmitente['CNPJ'] = substr($this->chMDFe, 6, 14);
         $this->tpAmb = $this->infEvento->getElementsByTagName("tpAmb")->item(0)->nodeValue;

@@ -442,7 +442,7 @@ class DanfeSimples extends DaCommon
         if (!empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue)
@@ -495,7 +495,7 @@ class DanfeSimples extends DaCommon
         if (!empty($this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
                 $this->dest->getElementsByTagName("CNPJ")->item(0)->nodeValue,
-                "###.###.###/####-##"
+                "##.###.###/####-##"
             );
         } else {
             $texto = !empty($this->dest->getElementsByTagName("CPF")->item(0)->nodeValue)
