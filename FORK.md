@@ -5,7 +5,7 @@
 > diferenças são intencionais. Um merge feito sem conhecê-las quebra layout,
 > paginação ou cálculo de chave — já aconteceu.
 
-Última revisão: **31/07/2026**
+Última revisão: **10/11/2026**
 
 ---
 
@@ -228,12 +228,9 @@ numérico o resultado é idêntico ao anterior, então é retrocompatível.
 
 ## 5. Como atualizar a partir do upstream
 
-```bash
-git remote add upstream https://github.com/nfephp-org/sped-da.git   # se ainda não existir
-git fetch upstream
-git checkout -b atualizacao-<data> master
-git merge upstream/master
-```
+A sincronização é **seletiva**, commit a commit por `cherry-pick`, e não por
+`merge`. O passo a passo está no [AGENTS.md](AGENTS.md); esta seção cobre a
+validação.
 
 ### Antes de começar
 
@@ -247,7 +244,7 @@ git merge upstream/master
    - NF-e em **contingência** (`tpEmis` 2 ou 5)
    - MDF-e com `chNFe` **e** com `chCTe` vinculados
 
-### Depois do merge
+### Depois de aplicar
 
 ```bash
 find src -name "*.php" -exec php -l {} \;    # lint
@@ -342,6 +339,21 @@ git diff 7546997 master     # só as customizações do fork
 git show 7546997            # só o merge da comunidade
 ```
 
+### Sincronização seletiva com o upstream
+
+A partir de 10/11/2026 o upstream é avaliado commit a commit (ver
+[AGENTS.md](AGENTS.md)). Como nada é mesclado, `git log master..upstream/master`
+sempre lista commits já avaliados; o ponto de partida é o marcador abaixo.
+
+**Último commit do upstream avaliado: `105e9c1`** (26/10/2026)
+
+| Commit (PR) | Assunto | Decisão | Motivo |
+|---|---|---|---|
+| `a33dfd2` (#684) | quadro do CT-e Substituto no DACTE | **trazido** | `tpCTe = 3` saía como "DETALHAMENTO DO CT-E ANULADO". Teste adaptado para chamar `printParameters()` |
+| `95380a6` | `exibirInfAdProd` e `---` em `vTotTrib` | **rejeitado** | o fork trata `infAdProd` e os tributos aproximados de outra forma (nas informações adicionais); com o nosso `exibirValorTributos = false` o campo "TRIBUTOS APROXIMADOS" sairia `---` em todo DANFE |
+| `70b9326`, `794aaf9`, `5369644`, `7343724`, `b270eb9`, `a19f0ae` (#673–#676) | seguro e vale-pedágio no DAMDFE | **rejeitado** | o mantenedor reverteu os PRs (`a19f0ae`, "quebrando o layout e sobrepondo dados"). O que sobrou dá fatal error com `<seg>` sem `infSeg` (opcional no schema), troca `quantidadeChavesLayout` por `30 - $this->condutor->length` (nulo fora do rodoviário) e mexe na região do CIOT. O CPF do pagador do vale-pedágio (`CPFPg`) foi reimplementado no fork; o seguro será implementado no padrão do fork |
+| `f98437e`, `619f48a`, `cf13d40`, `cc8ea5d`, `3a5caf4` (#667, #672, #680) | DANFSe | indiferente | `Danfse` não é usado; pode entrar quando quiserem reduzir divergência |
+
 ### Bugs do upstream corrigidos neste fork
 
 1. `Keys::verifyingDigit()` na chave de contingência (§4)
@@ -362,7 +374,7 @@ alguém precisar.
 
 | Item | Situação |
 |---|---|
-| Upstream tem 2 commits novos (PR #667) | tocam só `Danfse.php`, que não usamos |
+| Seguro da carga no DAMDFE | o fork não imprime o grupo `<seg>`; campos em definição |
 | Teste de regressão dos veículos novos | não existe — hoje só há validação manual |
 | PR #647 (flag de FCP) | tornaria a customização do FCP desnecessária |
 | PR #649 (IBS/CBS, Reforma Tributária) | **aguardar**. A obrigatoriedade de 03/08/2026 é do **XML**, não do DANFE — a rejeição da SEFAZ ocorre na autorização. A Receita ainda não publicou o layout do DANFE com IBS/CBS (documentos auxiliares "em estudo"); só a NFS-e ganhou o seu, pela NT 008/2026, que já veio no merge. Os rótulos e a posição do PR são invenção do autor e provavelmente não baterão com a norma. Além disso ele embute um limite fixo de 7 itens por página, que quebraria nossa paginação |
