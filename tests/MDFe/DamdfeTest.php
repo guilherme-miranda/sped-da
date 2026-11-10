@@ -50,4 +50,25 @@ class DamdfeTest extends TestCase
         $pdf = $damdfe->render();
         $this->assertTrue(Utils::pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
     }
+
+    /**
+     * O schema do vale-pedágio aceita CNPJPg ou CPFPg. A coluna do responsável imprime o que vier.
+     */
+    public function test_vale_pedagio_imprime_cnpj_ou_cpf_do_pagador(): void
+    {
+        $xml = file_get_contents(TEST_FIXTURES . 'xml/mdfe.xml');
+        $xml = str_replace(
+            '<infANTT/>',
+            '<infANTT><valePed>'
+            . '<disp><CNPJForn>11222333000181</CNPJForn><CNPJPg>44555666000199</CNPJPg><nCompra>222</nCompra></disp>'
+            . '<disp><CNPJForn>11222333000181</CNPJForn><CPFPg>52998224725</CPFPg><nCompra>333</nCompra></disp>'
+            . '</valePed></infANTT>',
+            $xml
+        );
+
+        $pdf = (new Damdfe($xml))->render();
+
+        $this->assertTrue(Utils::pdfContemTexto($pdf, '44555666000199'));
+        $this->assertTrue(Utils::pdfContemTexto($pdf, '52998224725'));
+    }
 }

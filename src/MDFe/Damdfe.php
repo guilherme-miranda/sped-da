@@ -1001,13 +1001,16 @@ class Damdfe extends DaCommon
             $y += 7;
             $x2 = ($x2 / 3);
             $this->pdf->textBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-            $texto = 'Responsável CNPJ';
+            $texto = 'Responsável CNPJ/CPF';
             $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
                 $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
+                if ($pgNode->length == 0) {
+                    $pgNode = $this->valePed->item($i)->getElementsByTagName('CPFPg');
+                }
                 $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
                 $this->pdf->textBox($x1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
